@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JSonVisitor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Persistence_g_1_5</a> &gt; <a href="index.source.html" class="el_package">edu.uga.miage.m1.polygons.gui.persistence</a> &gt; <span class="el_source">JSonVisitor.java</span></div><h1>JSonVisitor.java</h1><pre class="source lang-java linenums">package edu.uga.miage.m1.polygons.gui.persistence;
+
+import edu.uga.miage.m1.polygons.gui.shapes.Circle;
+import edu.uga.miage.m1.polygons.gui.shapes.SimpleShape;
+import edu.uga.miage.m1.polygons.gui.shapes.Square;
+import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
+
+/**
+ * @author &lt;a href=&quot;mailto:christophe.saint-marcel@univ-grenoble-alpes.fr&quot;&gt;Christophe&lt;/a&gt;
+ */
+public class JSonVisitor implements Visitor {
+
+<span class="fc" id="L13">    private String representation = null;</span>
+
+<span class="fc" id="L15">    public JSonVisitor() {</span>
+<span class="fc" id="L16">    }</span>
+
+    @Override
+    public void visit(Circle circle) {
+    // TODO Request callback for the circle
+<span class="fc" id="L21">    	this.representation=</span>
+    			  &quot;{\&quot;type\&quot;: \&quot;circle\&quot;,&quot;
+<span class="fc" id="L23">    			+ &quot;\&quot;x\&quot;:&quot;+circle.getX()+&quot;,&quot;</span>
+<span class="fc" id="L24">    			+ &quot;\&quot;y\&quot;:&quot;+circle.getY()</span>
+    			+ &quot;}&quot;;
+    	
+<span class="fc" id="L27">    }</span>
+
+    @Override
+    public void visit(Square square) {
+    // TODO Request callback for the square
+<span class="fc" id="L32">    	this.representation=</span>
+  			  &quot;{\&quot;type\&quot;: \&quot;square\&quot;,&quot;
+<span class="fc" id="L34">  			+ &quot;\&quot;x\&quot;:&quot;+square.getX()+&quot;,&quot;</span>
+<span class="fc" id="L35">  			+ &quot;\&quot;y\&quot;:&quot;+square.getY()</span>
+  			+ &quot;}&quot;;
+<span class="fc" id="L37">    }</span>
+
+    @Override
+    public void visit(Triangle triangle) {
+     // TODO Request callback for the triangle
+<span class="nc" id="L42">    	this.representation=</span>
+  			  &quot;{\&quot;type\&quot;: \&quot;triangle\&quot;,&quot;
+<span class="nc" id="L44">  			+ &quot;\&quot;x\&quot;:&quot;+triangle.getX()+&quot;,&quot;</span>
+<span class="nc" id="L45">  			+ &quot;\&quot;y\&quot;:&quot;+triangle.getY()</span>
+  			+ &quot;}&quot;;
+<span class="nc" id="L47">    }</span>
+
+    /**
+     * @return the representation in JSon example for a Circle
+     *
+     *         &lt;pre&gt;
+     * {@code
+     *  {
+     *     &quot;shape&quot;: {
+     *     	  &quot;type&quot;: &quot;circle&quot;,
+     *        &quot;x&quot;: -25,
+     *        &quot;y&quot;: -25
+     *     }
+     *  }
+     * }
+     *         &lt;/pre&gt;
+     */
+    public String getRepresentation() {
+<span class="fc" id="L65">        return representation;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
