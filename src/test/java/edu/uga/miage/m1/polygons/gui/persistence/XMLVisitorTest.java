@@ -57,12 +57,12 @@ class XMLVisitorTest {
 		XMLVisitor visitor = new XMLVisitor();
 		t.accept(visitor);
 		representation = visitor.getRepresentation();
-		/*if (representation == null) {
+		if (representation == null) {
 			fail("The visitor sequence must be implemented for the triangle");
 		}
 		Document document = convertStringToXml(representation);
 		assertEquals(expectedRepresentation, convertXmlToString(document));
-	*/}
+	}
 
 	@Test
 	void test_square_visitor() {

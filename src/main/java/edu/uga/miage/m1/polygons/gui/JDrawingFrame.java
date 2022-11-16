@@ -25,7 +25,6 @@ import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -34,6 +33,7 @@ import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -75,6 +75,9 @@ implements MouseListener, MouseMotionListener
 	private JLabel mLabel;
 	private ActionListener mReusableActionListener = new ShapeActionListener();
 	private static final Logger logger = Logger.getLogger(JDrawingFrame.class.getName());
+	private final String CIRCLE = "Circle";
+	private final String SQUARE = "Square";
+	private final String TRIANGLE = "Triangle";
 
 
 	/**
@@ -179,12 +182,12 @@ implements MouseListener, MouseMotionListener
 			public void actionPerformed(ActionEvent e) {
 				ImportFiles importF = new ImportFiles();
 				importF.importFile();
-				for(SimpleShape shape : importF.getList()) {
-					if (mPanel.contains(shape.getX(), shape.getY()))
+				for(SimpleShape simpleShape : importF.getList()) {
+					if (mPanel.contains(simpleShape.getX(), simpleShape.getY()))
 					{
 						Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-						shape.draw(g2);
-						shapesList.add(shape);
+						simpleShape.draw(g2);
+						shapesList.add(simpleShape);
 					}
 				}
 				
@@ -287,7 +290,6 @@ implements MouseListener, MouseMotionListener
 			groupe.add(shape);
 		}
     logger.log(new LogRecord(Level.INFO, "Grp: "+groupe.getGroupeForms()));
-		//System.out.println("Grp: "+groupe.getGroupeForms());
 	}
 
 	/**
@@ -316,11 +318,11 @@ implements MouseListener, MouseMotionListener
 			// Itère sur tous les boutons
 			Iterator<Shapes> keys = mButtons.keySet().iterator();
 			while (keys.hasNext()) {
-				Shapes shape = keys.next();
-				JButton btn = mButtons.get(shape);
-				if (evt.getActionCommand().equals(shape.toString())) {
+				Shapes shapeGroup = keys.next();
+				JButton btn = mButtons.get(shapeGroup);
+				if (evt.getActionCommand().equals(shapeGroup.toString())) {
 					btn.setBorderPainted(true);
-					mSelected = shape;
+					mSelected = shapeGroup;
 				} else {
 					btn.setBorderPainted(false);
 				}
@@ -334,15 +336,15 @@ implements MouseListener, MouseMotionListener
 			XMLVisitor visitor = new XMLVisitor();
 			File file = new File("shapes.xml");
 			String result ="<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n <root>\n";
-			for(SimpleShape shape : shapesList) {
-				 switch(shape.getClass().getSimpleName()) {
-				 case "Circle" : new Circle(shape.getX(),shape.getY()).accept(visitor);
+			for(SimpleShape localSimpleShape : shapesList) {
+				 switch(localSimpleShape.getClass().getSimpleName()) {
+				 case CIRCLE : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 					 result=result+visitor.getRepresentation();
 					 break;
-				 case "Square" : new Square(shape.getX(),shape.getY()).accept(visitor);
+				 case SQUARE : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 				 				 result=result+visitor.getRepresentation();
 				 				 break;
-				 case "Triangle" :  new Triangle(shape.getX(),shape.getY()).accept(visitor);
+				 case TRIANGLE :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 				 					result=result+visitor.getRepresentation();
 				 				    break;
 				 default : break;
@@ -368,15 +370,15 @@ implements MouseListener, MouseMotionListener
 			JSonVisitor visitor = new JSonVisitor();
 			File file = new File("shapesJson.json");
 			String result ="{\n \"Shapes\":[\n";
-			for(SimpleShape shape : shapesList) {
-				 switch(shape.getClass().getSimpleName()) {
-				 case "Circle" : new Circle(shape.getX(),shape.getY()).accept(visitor);
+			for(SimpleShape localSimpleShape : shapesList) {
+				 switch(localSimpleShape.getClass().getSimpleName()) {
+				 case CIRCLE : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 					 result=result+visitor.getRepresentation();
 					 break;
-				 case "Square" : new Square(shape.getX(),shape.getY()).accept(visitor);
+				 case SQUARE : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 				 				 result=result+visitor.getRepresentation();
 				 				 break;
-				 case "Triangle" :  new Triangle(shape.getX(),shape.getY()).accept(visitor);
+				 case TRIANGLE :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 				 					result=result+visitor.getRepresentation();
 				 				    break;
 				} 
@@ -499,21 +501,20 @@ implements MouseListener, MouseMotionListener
 		}
 	}
 
-public class Move
+public class Move implements Serializable
 	{
+	
+	private static final long serialVersionUID = 2434191698956589572L;
+
 		public SimpleShape findInfExist(MouseEvent evt , JPanel panel , List<SimpleShape> shapesList) {
 			Point p = evt.getPoint();
-			//for(int i=p.x-50; i<=p.x+50;i++) {
-				//for(int j=p.x-50; j<=p.x+50;j++) {
-				//	p.setLocation(i, j);
+			
 					if(panel.findComponentAt(p)!=null) {
 						for(SimpleShape shape : shapesList) {
 							if(shape.getX()==p.x && shape.getY()==p.y) {
 								panel.remove(panel.findComponentAt(p));
 								panel.validate();
 								return shape;
-							//}
-						//}
 					}
 				}
 			}
@@ -526,15 +527,15 @@ public class Move
 				Graphics2D g2 = (Graphics2D) panel.getGraphics();
 				switch(shape.getClass().getSimpleName())
 				{
-				case "Circle": 		newShape=new Circle(evt.getX(), evt.getY());
+				case CIRCLE: 		newShape=new Circle(evt.getX(), evt.getY());
 						newShape.draw(g2);
 				
 				break;
-				case "Triangle": 		newShape=new Triangle(evt.getX(), evt.getY());
+				case TRIANGLE: 		newShape=new Triangle(evt.getX(), evt.getY());
 						newShape.draw(g2);
 				
 				break;
-				case "Square": 		newShape= new Square(evt.getX(), evt.getY());
+				case SQUARE: 		newShape= new Square(evt.getX(), evt.getY());
 						newShape.draw(g2);
 				
 				break;
