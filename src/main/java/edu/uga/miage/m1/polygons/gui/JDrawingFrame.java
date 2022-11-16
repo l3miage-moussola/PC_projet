@@ -75,9 +75,9 @@ implements MouseListener, MouseMotionListener
 	private JLabel mLabel;
 	private ActionListener mReusableActionListener = new ShapeActionListener();
 	private static final Logger logger = Logger.getLogger(JDrawingFrame.class.getName());
-	private final String CIRCLE = "Circle";
-	private final String SQUARE = "Square";
-	private final String TRIANGLE = "Triangle";
+	private static final String CIRCLESTRING = "Circle";
+	private static final String SQUARESTRING = "Square";
+	private static final String TRIANGLESTRING = "Triangle";
 
 
 	/**
@@ -162,7 +162,7 @@ implements MouseListener, MouseMotionListener
 				case "JSON" :Export exportJ = new Export(); 
 							 exportJ.convertToJson(shapesList);
 							break;
-				default : break;
+				default :
 				
 				}
 
@@ -286,8 +286,8 @@ implements MouseListener, MouseMotionListener
 	    		draggedShape = optionalShape.get();
 				index = shapesList.indexOf(draggedShape);
 	    	}
-			SimpleShape shape = shapesList.get(index);
-			groupe.add(shape);
+			SimpleShape draggedSimpleShape = shapesList.get(index);
+			groupe.add(draggedSimpleShape);
 		}
     logger.log(new LogRecord(Level.INFO, "Grp: "+groupe.getGroupeForms()));
 	}
@@ -338,32 +338,27 @@ implements MouseListener, MouseMotionListener
 			String result ="<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n <root>\n";
 			for(SimpleShape localSimpleShape : shapesList) {
 				 switch(localSimpleShape.getClass().getSimpleName()) {
-				 case CIRCLE : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				 case CIRCLESTRING : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 					 result=result+visitor.getRepresentation();
 					 break;
-				 case SQUARE : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				 case SQUARESTRING : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 				 				 result=result+visitor.getRepresentation();
 				 				 break;
-				 case TRIANGLE :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				 case TRIANGLESTRING :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 				 					result=result+visitor.getRepresentation();
 				 				    break;
-				 default : break;
+				 default :
 				} 
 			}
 			result+="\n </root>";
-			FileWriter writter = null;
+			
 
-			try {
-				writter = new FileWriter(file);
+			try (FileWriter writter = new FileWriter(file);) {
 				writter.write(result);
-				writter.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}finally {
-				if(writter!=null) {
-					writter.close();
-				}
 			}
+			
 		
 		}
 		public void convertToJson(List<SimpleShape> shapesList) {
@@ -372,15 +367,16 @@ implements MouseListener, MouseMotionListener
 			String result ="{\n \"Shapes\":[\n";
 			for(SimpleShape localSimpleShape : shapesList) {
 				 switch(localSimpleShape.getClass().getSimpleName()) {
-				 case CIRCLE : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				 case CIRCLESTRING : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 					 result=result+visitor.getRepresentation();
 					 break;
-				 case SQUARE : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				 case SQUARESTRING : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 				 				 result=result+visitor.getRepresentation();
 				 				 break;
-				 case TRIANGLE :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				 case TRIANGLESTRING :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
 				 					result=result+visitor.getRepresentation();
 				 				    break;
+				 default :
 				} 
 			}
 			result =result.replace("}{","},{");
@@ -492,7 +488,7 @@ implements MouseListener, MouseMotionListener
 			case "circle" : return new Circle(x,y);
 			case "square" : return new Square(x,y);
 			case "triangle" : return new Triangle(x,y);
-			default : break;
+			default :
 			}
 			return null;
 		}
@@ -510,11 +506,11 @@ public class Move implements Serializable
 			Point p = evt.getPoint();
 			
 					if(panel.findComponentAt(p)!=null) {
-						for(SimpleShape shape : shapesList) {
-							if(shape.getX()==p.x && shape.getY()==p.y) {
+						for(SimpleShape localSimpleShape : shapesList) {
+							if(localSimpleShape.getX()==p.x && localSimpleShape.getY()==p.y) {
 								panel.remove(panel.findComponentAt(p));
 								panel.validate();
-								return shape;
+								return localSimpleShape;
 					}
 				}
 			}
@@ -527,19 +523,19 @@ public class Move implements Serializable
 				Graphics2D g2 = (Graphics2D) panel.getGraphics();
 				switch(shape.getClass().getSimpleName())
 				{
-				case CIRCLE: 		newShape=new Circle(evt.getX(), evt.getY());
+				case CIRCLESTRING: 		newShape=new Circle(evt.getX(), evt.getY());
 						newShape.draw(g2);
 				
 				break;
-				case TRIANGLE: 		newShape=new Triangle(evt.getX(), evt.getY());
+				case TRIANGLESTRING: 		newShape=new Triangle(evt.getX(), evt.getY());
 						newShape.draw(g2);
 				
 				break;
-				case SQUARE: 		newShape= new Square(evt.getX(), evt.getY());
+				case SQUARESTRING: 		newShape= new Square(evt.getX(), evt.getY());
 						newShape.draw(g2);
 				
 				break;
-				default: 			System.out.println("No shape named " + shape.getClass().getSimpleName());
+				default: 			logger.log(new LogRecord(Level.INFO, "No shape named " + shape.getClass().getSimpleName()));
 
 				}
 				if(newShape!=null) {
