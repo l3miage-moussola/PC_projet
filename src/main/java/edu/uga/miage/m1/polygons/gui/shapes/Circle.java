@@ -45,7 +45,7 @@ public class Circle implements SimpleShape, Visitable {
      */
     public void draw(Graphics2D g2) {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        GradientPaint gradient = new GradientPaint(m_x, m_y, Color.RED, m_x + 50, m_y, Color.WHITE);
+        GradientPaint gradient = new GradientPaint(m_x, m_y, Color.RED, m_x + 50L, m_y, Color.WHITE);
         g2.setPaint(gradient);
         g2.fill(new Ellipse2D.Double(m_x, m_y, 50, 50));
         BasicStroke wideStroke = new BasicStroke(2.0f);

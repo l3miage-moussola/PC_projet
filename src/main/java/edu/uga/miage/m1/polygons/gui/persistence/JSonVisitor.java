@@ -1,9 +1,6 @@
 package edu.uga.miage.m1.polygons.gui.persistence;
 
-import edu.uga.miage.m1.polygons.gui.shapes.Circle;
-import edu.uga.miage.m1.polygons.gui.shapes.SimpleShape;
-import edu.uga.miage.m1.polygons.gui.shapes.Square;
-import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
+import edu.uga.miage.m1.polygons.gui.shapes.*;
 
 /**
  * @author <a href="mailto:christophe.saint-marcel@univ-grenoble-alpes.fr">Christophe</a>
@@ -17,7 +14,6 @@ public class JSonVisitor implements Visitor {
 
     @Override
     public void visit(Circle circle) {
-    // TODO Request callback for the circle
     	this.representation=
     			  "{\"type\": \"circle\","
     			+ "\"x\":"+circle.getX()+","
@@ -28,7 +24,6 @@ public class JSonVisitor implements Visitor {
 
     @Override
     public void visit(Square square) {
-    // TODO Request callback for the square
     	this.representation=
   			  "{\"type\": \"square\","
   			+ "\"x\":"+square.getX()+","
