@@ -253,10 +253,10 @@ implements MouseListener, MouseMotionListener
 	 * @param evt The associated mouse event.
 	 **/
   private Move move= new Move();
-	SimpleShape shape=null;
+	SimpleShape movingShape=null;
 	public void mousePressed(MouseEvent evt)
 	{
-    shape = move.findInfExist(evt, mPanel, shapesList);
+		movingShape = move.findInfExist(evt, mPanel, shapesList);
 	}
 
 	/**
@@ -267,7 +267,7 @@ implements MouseListener, MouseMotionListener
 	public void mouseReleased(MouseEvent evt)
 	{
     mPanel.validate();
-		move.moveShape(evt, mPanel, shapesList, shape);
+		move.moveShape(evt, mPanel, shapesList, movingShape);
 	}
 
 	/**
