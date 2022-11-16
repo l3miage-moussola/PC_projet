@@ -15,8 +15,6 @@ import edu.uga.miage.m1.polygons.gui.persistence.Visitor;
 class CircleTest {
 	
 	private int counterVisitorCircle;
-	private int counterVisitorTriangle;
-	private int counterVisitorSquare;
 
 	@Test
 	void test_getters() {
@@ -47,23 +45,18 @@ class CircleTest {
 			@Override
 			public void visit(Square square) {
 				// TODO Auto-generated method stub
-				counterVisitorSquare++;
 				
 			}
 
 			@Override
 			public void visit(Triangle triangle) {
 				// TODO Auto-generated method stub
-				counterVisitorTriangle++;
+				
 			}
 			
 		};
 		
 		c.accept(v);
 		assertEquals(1, counterVisitorCircle);
-		assertEquals(0, counterVisitorTriangle);
-		assertEquals(0, counterVisitorSquare);
-		
-
 	}
 }

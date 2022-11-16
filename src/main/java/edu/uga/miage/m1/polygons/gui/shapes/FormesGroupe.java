@@ -1,10 +1,14 @@
 package edu.uga.miage.m1.polygons.gui.shapes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FormesGroupe implements Serializable{
 	
+	public FormesGroupe() {
+		this.shapesList = new ArrayList<>();
+	}
 	private static final long serialVersionUID = 5368906687199772837L;
 	private List<SimpleShape> shapesList;
 	public List<SimpleShape> getGroupeForms(){
