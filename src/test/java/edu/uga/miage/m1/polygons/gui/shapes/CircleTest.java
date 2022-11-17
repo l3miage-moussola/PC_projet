@@ -4,12 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import edu.uga.miage.m1.polygons.gui.persistence.Visitor;
+import edu.uga.miage.m1.polygons.gui.persistence.XMLVisitor;
 
 @ExtendWith(MockitoExtension.class)
 class CircleTest {
@@ -29,6 +33,14 @@ class CircleTest {
 		c.accept(v);
 		verify(v, times(1)).visit(c);
 	}
+	
+	@Test
+	void test_draw_with_mock(@Mock Graphics2D graph) {
+		Circle c = new Circle(0, 0);		
+		c.draw(graph);
+		verify(graph, times(1)).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);;
+	}
+	
 
 	@Test
 	void test_visit_without_mockito() {
@@ -54,9 +66,25 @@ class CircleTest {
 				
 			}
 			
-		};
+		};	
 		
 		c.accept(v);
 		assertEquals(1, counterVisitorCircle);
+		
+	}
+	
+	@Test
+	void test_XMLVisitor_visit_circle() {
+				
+		Circle c = new Circle(0, 0);
+		
+		XMLVisitor v = new XMLVisitor();
+		
+		v.visit(c);
+		
+		String representation = v.getRepresentation();
+		
+		c.accept(v);
+		assertEquals("<shape><type>circle</type><x>0</x><y>0</y></shape>",representation);
 	}
 }

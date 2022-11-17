@@ -505,12 +505,12 @@ public class Move implements Serializable
 		public SimpleShape findInfExist(MouseEvent evt , JPanel panel , List<SimpleShape> shapesList) {
 			Point p = evt.getPoint();
 			
-					if(panel.findComponentAt(p)!=null) {
-						for(SimpleShape localSimpleShape : shapesList) {
-							if(localSimpleShape.getX()==p.x && localSimpleShape.getY()==p.y) {
-								panel.remove(panel.findComponentAt(p));
-								panel.validate();
-								return localSimpleShape;
+			if(panel.findComponentAt(p)!=null) {
+				for(SimpleShape localSimpleShape : shapesList) {
+					if(localSimpleShape.getX()==p.x && localSimpleShape.getY()==p.y) {
+						panel.remove(panel.findComponentAt(p));
+						panel.validate();
+						return localSimpleShape;
 					}
 				}
 			}
