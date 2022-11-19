@@ -26,6 +26,9 @@ class JDrawingTest {
 		JDrawingFrame frame = new JDrawingFrame("TestFrame");
 		
 		frame.mouseClicked(evt);
+		frame.mouseClicked(new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true));
+		frame.mouseDragged(evt);
+		frame.mouseDrag(null, 0, 0);
 		verify(evt, times(1)).getX();
 
 	}
