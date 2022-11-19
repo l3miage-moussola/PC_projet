@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 
 import org.junit.jupiter.api.Test;
@@ -22,10 +21,12 @@ class JDrawingTest {
 		assertNotEquals(null, frame);		
 	}
 	
+	@Test
 	void testMouseClicked(@Mock MouseEvent evt) {
 		JDrawingFrame frame = new JDrawingFrame("TestFrame");
+		
 		frame.mouseClicked(evt);
-		verify(evt, times(1)).consume();
+		verify(evt, times(1)).getX();
 
 	}
 

@@ -53,6 +53,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+
 import edu.uga.miage.m1.polygons.gui.persistence.*;
 import edu.uga.miage.m1.polygons.gui.shapes.*;
 
@@ -78,6 +80,9 @@ implements MouseListener, MouseMotionListener
 	private static final String CIRCLESTRING = "Circle";
 	private static final String SQUARESTRING = "Square";
 	private static final String TRIANGLESTRING = "Triangle";
+	private static final  String SLASHTYPESTRING = "/type";
+	private static final  String TYPESTRING ="type";
+
 
 
 	/**
@@ -101,7 +106,7 @@ implements MouseListener, MouseMotionListener
 		mPanel.setMinimumSize(new Dimension(400, 400));
 		mPanel.addMouseListener(this);
 		mPanel.addMouseMotionListener(this);
-		mLabel = new JLabel(" ", JLabel.LEFT);
+		mLabel = new JLabel(" ", SwingConstants.LEFT);
 
 		// Fills the panel
 		setLayout(new BorderLayout());
@@ -153,17 +158,17 @@ implements MouseListener, MouseMotionListener
 			public void actionPerformed(ActionEvent e) {
 				switch(exportType) {
 				case "XML" : Export export = new Export();
-					try {
-						export.convertToXml(shapesList);
-					} catch (IOException e1) {
-						logger.log(new LogRecord(Level.INFO,"IOException while converting to XML"));
-					}
-							 break;
+				try {
+					export.convertToXml(shapesList);
+				} catch (IOException e1) {
+					logger.log(new LogRecord(Level.INFO,"IOException while converting to XML"));
+				}
+				break;
 				case "JSON" :Export exportJ = new Export(); 
-							 exportJ.convertToJson(shapesList);
-							break;
+				exportJ.convertToJson(shapesList);
+				break;
 				default :
-				
+
 				}
 
 			}
@@ -172,7 +177,7 @@ implements MouseListener, MouseMotionListener
 		mToolbar.add(button);
 		mToolbar.validate();
 	}
-	
+
 	private void addImport(){
 		JButton button = new JButton("Import");
 		button.setActionCommand("Import");
@@ -190,13 +195,13 @@ implements MouseListener, MouseMotionListener
 						shapesList.add(simpleShape);
 					}
 				}
-				
+
 			}
-			
+
 		});
 		mToolbar.add(button);
 		mToolbar.validate();
-		
+
 	}
 
 	/**
@@ -252,7 +257,7 @@ implements MouseListener, MouseMotionListener
 	 * shape dragging.
 	 * @param evt The associated mouse event.
 	 **/
-  private Move move= new Move();
+	private Move move= new Move();
 	SimpleShape movingShape=null;
 	public void mousePressed(MouseEvent evt)
 	{
@@ -266,7 +271,7 @@ implements MouseListener, MouseMotionListener
 	 **/
 	public void mouseReleased(MouseEvent evt)
 	{
-    mPanel.validate();
+		mPanel.validate();
 		move.moveShape(evt, mPanel, shapesList, movingShape);
 	}
 
@@ -275,21 +280,21 @@ implements MouseListener, MouseMotionListener
 	 * move a dragged shape.
 	 * @param evt The associated mouse event.
 	 **/
-  FormesGroupe groupe =new FormesGroupe();
+	FormesGroupe groupe =new FormesGroupe();
 	public void mouseDragged(MouseEvent evt)
 	{
 		int index = -1;
 		SimpleShape draggedShape;
 		Optional<SimpleShape> optionalShape = shapesList.stream().filter(e->e.getX()==evt.getX() && e.getY()==evt.getY()).findAny();
-	    if(shapesList.stream().anyMatch(e->e.getX()==evt.getX() && e.getY()==evt.getY())) {
-	    	if(optionalShape.isPresent()) {
-	    		draggedShape = optionalShape.get();
+		if(shapesList.stream().anyMatch(e->e.getX()==evt.getX() && e.getY()==evt.getY())) {
+			if(optionalShape.isPresent()) {
+				draggedShape = optionalShape.get();
 				index = shapesList.indexOf(draggedShape);
-	    	}
+			}
 			SimpleShape draggedSimpleShape = shapesList.get(index);
 			groupe.add(draggedSimpleShape);
 		}
-    logger.log(new LogRecord(Level.INFO, "Grp: "+groupe.getGroupeForms()));
+		logger.log(new LogRecord(Level.INFO, "Grp: "+groupe.getGroupeForms()));
 	}
 
 	/**
@@ -335,52 +340,67 @@ implements MouseListener, MouseMotionListener
 		public void  convertToXml(List<SimpleShape> shapesList) throws IOException {
 			XMLVisitor visitor = new XMLVisitor();
 			File file = new File("shapes.xml");
-			String result ="<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n <root>\n";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" ?>\\n <root>\\n");
 			for(SimpleShape localSimpleShape : shapesList) {
-				 switch(localSimpleShape.getClass().getSimpleName()) {
-				 case CIRCLESTRING : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
-					 result=result+visitor.getRepresentation();
-					 break;
-				 case SQUARESTRING : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
-				 				 result=result+visitor.getRepresentation();
-				 				 break;
-				 case TRIANGLESTRING :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
-				 					result=result+visitor.getRepresentation();
-				 				    break;
-				 default :
+				switch(localSimpleShape.getClass().getSimpleName()) {
+				case CIRCLESTRING : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				stringBuilder.append(visitor.getRepresentation());
+
+				break;
+				case SQUARESTRING : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				stringBuilder.append(visitor.getRepresentation());
+
+				break;
+				case TRIANGLESTRING :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				stringBuilder.append(visitor.getRepresentation());
+
+				break;
+				default :
 				} 
 			}
-			result+="\n </root>";
-			
+			stringBuilder.append("\n </root>");
+
+			String result = stringBuilder.toString();
+
 
 			try (FileWriter writter = new FileWriter(file);) {
 				writter.write(result);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-		
+
+
 		}
 		public void convertToJson(List<SimpleShape> shapesList) {
 			JSonVisitor visitor = new JSonVisitor();
 			File file = new File("shapesJson.json");
-			String result ="{\n \"Shapes\":[\n";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("{\n \"Shapes\":[\n");
+
 			for(SimpleShape localSimpleShape : shapesList) {
-				 switch(localSimpleShape.getClass().getSimpleName()) {
-				 case CIRCLESTRING : new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
-					 result=result+visitor.getRepresentation();
-					 break;
-				 case SQUARESTRING : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
-				 				 result=result+visitor.getRepresentation();
-				 				 break;
-				 case TRIANGLESTRING :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
-				 					result=result+visitor.getRepresentation();
-				 				    break;
-				 default :
+				switch(localSimpleShape.getClass().getSimpleName()) {
+				case CIRCLESTRING : 
+					new Circle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+					stringBuilder.append(visitor.getRepresentation());
+
+					break;
+				case SQUARESTRING : new Square(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				break;
+				case TRIANGLESTRING :  new Triangle(localSimpleShape.getX(),localSimpleShape.getY()).accept(visitor);
+				stringBuilder.append(visitor.getRepresentation());
+
+				break;
+				default :
 				} 
 			}
+			String result = stringBuilder.toString();
 			result =result.replace("}{","},{");
-			result+="\n]\n}";
+			
+			StringBuilder stringBuilder2 = new StringBuilder();
+			stringBuilder2.append(result+"\n]\n}");
+
+			result=stringBuilder2.toString();
 			try {
 				FileWriter writter = new FileWriter(file);
 				writter.write(result);
@@ -390,7 +410,7 @@ implements MouseListener, MouseMotionListener
 			}
 		}
 	}
-	
+
 	public class ImportFiles{
 		private List<SimpleShape> shapesList = new ArrayList<>();
 		public void importFile(){
@@ -399,7 +419,7 @@ implements MouseListener, MouseMotionListener
 			File f = fd.getFiles()[0];
 			String representation="";
 			try {
-			  representation = Files.readString(Paths.get(f.getAbsolutePath()));
+				representation = Files.readString(Paths.get(f.getAbsolutePath()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -410,80 +430,88 @@ implements MouseListener, MouseMotionListener
 			if(fileType.equals("json")) {
 				jsonImport(representation);
 			}
-			
+
 		}
 		private void xmlImport(String rep) {
-			System.out.print(rep.contains("/type")+"\n");
-			while(rep.contains("/type")) {
-				String type ="";
+			logger.log(new LogRecord(Level.INFO, "rep contains '/type' : "+rep.contains(SLASHTYPESTRING)+"\n"));
+			while(rep.contains(SLASHTYPESTRING)) {
+				StringBuilder stringBuilderType = new StringBuilder();
 				int x = 0 ;
 				int y = 0;
 				int debut = rep.indexOf("type") +5;
-				int fin = rep.indexOf("/type")-2;
+				int fin = rep.indexOf(SLASHTYPESTRING)-2;
 				for(int i=debut;i<=fin;i++) {
-					type+=rep.charAt(i);
+					stringBuilderType.append(rep.charAt(i));
 				}
-				System.out.print("\n le type"+type);
+				String type = stringBuilderType.toString();
+				logger.log(new LogRecord(Level.INFO, "\n le type"+type));
 				String xoccur = "";
 				int xDeb=rep.indexOf("<x>")+3;
-				System.out.print("\n le xdeb "+xDeb);
+				logger.log(new LogRecord(Level.INFO, "\n le xdeb "+xDeb));
+
 				int xFin=rep.indexOf("</x>");
-				System.out.print("\n le xdxFineb "+xFin);
+				logger.log(new LogRecord(Level.INFO, "\n le xdxFineb "+xFin));
+
 				for(int i=xDeb;i<xFin;i++) {
 					xoccur+=rep.charAt(i);
 				}
-				System.out.print("X: "+x);
+				logger.log(new LogRecord(Level.INFO, "X: "+x));
 				x=Integer.parseInt(xoccur);
-				
+
 				String yoccur = "";
-				int yDeb=rep.indexOf("<y>")+3;;
+				int yDeb=rep.indexOf("<y>")+3;
 				int yFin=rep.indexOf("</y>");
 				for(int i=yDeb;i<yFin;i++) {
 					yoccur+=rep.charAt(i);
 				}	
 				System.out.print("Y: "+y);
 				y=Integer.parseInt(yoccur);
-				
+
 				rep = rep.substring(rep.indexOf("</shape>")+5);
 				shapesList.add(createShape(type,x,y));
 			}
 		}
 		private void jsonImport(String rep) {
 			System.out.print("Rep :" +rep);
-			while(rep.contains("type")) {
-				String type = "";
+			while(rep.contains(TYPESTRING)) {
+				StringBuilder stringBuilderType = new StringBuilder();
+				
 				int x=0;
 				int y=0;
-				int deb = rep.indexOf("type")+8;
+				int deb = rep.indexOf(TYPESTRING)+8;
 				int fin = rep.indexOf(",")-1;
 				for(int i=deb;i<fin;i++) {
-					type+= rep.charAt(i);
+					stringBuilderType.append(rep.charAt(i)); 
 				}
-				System.out.print("\n le type"+type);
-				String xoccur="";
+				String type = stringBuilderType.toString();
+				logger.log(new LogRecord(Level.INFO, "\n le type"+type));
+
+				StringBuilder stringBuilderxoccur = new StringBuilder();
 				int xdeb=rep.indexOf("\"x\"")+4;
 				int ydeb=rep.indexOf("\"y\"");
 				for(int i=xdeb;i<=ydeb-2;i++) {
-					xoccur+=rep.charAt(i);
+					stringBuilderxoccur.append(rep.charAt(i));
 				}
 				String yoccur="";
 				for(int i=ydeb+4;i<rep.indexOf("}");i++) {
 					yoccur+=rep.charAt(i);
 				}
-				
+				String xoccur= stringBuilderxoccur.toString();
 				x=Integer.parseInt(xoccur);
-				System.out.print("X :" +x);
-				
+				logger.log(new LogRecord(Level.INFO,"X :" +x));
+
 				y=Integer.parseInt(yoccur);
-				System.out.print("Y :" +y);
+				logger.log(new LogRecord(Level.INFO,"Y :" +y));
+
 				rep=rep.substring(rep.indexOf("}")+2);
-				System.out.print("Rep :" +rep);
+				logger.log(new LogRecord(Level.INFO,"Rep :" +rep));
+
 				shapesList.add(createShape(type,x,y));
-        logger.log(new LogRecord(Level.INFO, "test"+shapesList));
+				logger.log(new LogRecord(Level.INFO, "test"+shapesList));
 			}
 		}
 		public SimpleShape createShape(String type,int x , int y){
-			
+
 			switch(type) {
 			case "circle" : return new Circle(x,y);
 			case "square" : return new Square(x,y);
@@ -497,14 +525,14 @@ implements MouseListener, MouseMotionListener
 		}
 	}
 
-public class Move implements Serializable
+	public class Move implements Serializable
 	{
-	
-	private static final long serialVersionUID = 2434191698956589572L;
+
+		private static final long serialVersionUID = 2434191698956589572L;
 
 		public SimpleShape findInfExist(MouseEvent evt , JPanel panel , List<SimpleShape> shapesList) {
 			Point p = evt.getPoint();
-			
+
 			if(panel.findComponentAt(p)!=null) {
 				for(SimpleShape localSimpleShape : shapesList) {
 					if(localSimpleShape.getX()==p.x && localSimpleShape.getY()==p.y) {
@@ -516,7 +544,7 @@ public class Move implements Serializable
 			}
 			return null;
 		}
-		
+
 		public void moveShape(MouseEvent evt , JPanel panel , List<SimpleShape> shapesList,SimpleShape shape) {
 			if(shape!=null) {
 				SimpleShape newShape = null;
@@ -524,16 +552,16 @@ public class Move implements Serializable
 				switch(shape.getClass().getSimpleName())
 				{
 				case CIRCLESTRING: 		newShape=new Circle(evt.getX(), evt.getY());
-						newShape.draw(g2);
-				
+				newShape.draw(g2);
+
 				break;
 				case TRIANGLESTRING: 		newShape=new Triangle(evt.getX(), evt.getY());
-						newShape.draw(g2);
-				
+				newShape.draw(g2);
+
 				break;
 				case SQUARESTRING: 		newShape= new Square(evt.getX(), evt.getY());
-						newShape.draw(g2);
-				
+				newShape.draw(g2);
+
 				break;
 				default: 			logger.log(new LogRecord(Level.INFO, "No shape named " + shape.getClass().getSimpleName()));
 
@@ -541,7 +569,7 @@ public class Move implements Serializable
 				if(newShape!=null) {
 					shapesList.add(newShape);
 				}
-				
+
 			}
 		}
 	}
