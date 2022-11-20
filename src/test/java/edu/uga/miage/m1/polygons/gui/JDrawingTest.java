@@ -29,7 +29,24 @@ class JDrawingTest {
 		frame.mouseClicked(new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true));
 		frame.mouseDragged(evt);
 		frame.mouseDrag(null, 0, 0);
+		frame.mouseDown(null, 0, 0);
+		frame.mouseEntered(evt);
+		
 		verify(evt, times(1)).getX();
+
+	}
+	
+	@Test
+	void testMouseMoved(@Mock MouseEvent evt) {
+		JDrawingFrame frame = new JDrawingFrame("TestFrame");
+		MouseEvent evt2 = new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true);
+		frame.mousePressed(evt2);
+		frame.mouseExited(evt);
+
+		frame.mouseMoved(new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true));
+		
+		
+		assertNotEquals(null, frame);		
 
 	}
 
