@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -81,6 +80,9 @@ implements MouseListener, MouseMotionListener
 	private static final String TRIANGLESTRING = "Triangle";
 	private static final  String SLASHTYPESTRING = "/type";
 	private static final  String TYPESTRING ="type";
+	boolean groupeCreation = false;
+	
+	
 
 
 
@@ -120,9 +122,10 @@ implements MouseListener, MouseMotionListener
 		addExport("XML");
 		addExport("JSON");
 		addImport();
-
+		addGroupe();
 		setPreferredSize(new Dimension(400, 400));
 	}
+	
 
 
 	/**
@@ -176,6 +179,21 @@ implements MouseListener, MouseMotionListener
 		mToolbar.add(button);
 		mToolbar.validate();
 	}
+	
+	public void addGroupe() {
+        JButton button = new JButton("CreateNewGroupe");
+        button.setActionCommand("CreateNewGroupe");
+        button.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                groupeCreation = true;
+            }
+            
+        });
+        mToolbar.add(button);
+        mToolbar.validate();
+    }
 
 	private void addImport(){
 		JButton button = new JButton("Import");
@@ -272,6 +290,13 @@ implements MouseListener, MouseMotionListener
 	{
 		mPanel.validate();
 		move.moveShape(evt, mPanel, shapesList, movingShape);
+		for(SimpleShape shape : shapesList) {
+            if (mPanel.contains(evt.getX(), evt.getY()))
+            {
+                Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+                shape.draw(g2);
+            }
+        }
 	}
 
 	/**
@@ -282,18 +307,17 @@ implements MouseListener, MouseMotionListener
 	FormesGroupe groupe =new FormesGroupe();
 	public void mouseDragged(MouseEvent evt)
 	{
-		int index = -1;
-		SimpleShape draggedShape;
-		Optional<SimpleShape> optionalShape = shapesList.stream().filter(e->e.getX()==evt.getX() && e.getY()==evt.getY()).findAny();
-		if(shapesList.stream().anyMatch(e->e.getX()==evt.getX() && e.getY()==evt.getY())) {
-			if(optionalShape.isPresent()) {
-				draggedShape = optionalShape.get();
-				index = shapesList.indexOf(draggedShape);
-			}
-			SimpleShape draggedSimpleShape = shapesList.get(index);
-			groupe.add(draggedSimpleShape);
-		}
-		logger.log(new LogRecord(Level.INFO, "Grp: "+groupe.getGroupeForms()));
+		if(groupeCreation) {
+
+            SimpleShape newShape = move.isSelected(evt, shapesList);
+            if(newShape!=null && !(groupe.getGroupeForms().stream().anyMatch(e -> e.getX() == newShape.getX() && e.getY()==newShape.getY()))) {
+                
+            	groupe.add(newShape);            
+            }
+
+        }
+        mPanel.repaint();
+        
 	}
 
 	/**
@@ -562,6 +586,7 @@ implements MouseListener, MouseMotionListener
 				}
 				if(newShape!=null) {
 					shapesList.add(newShape);
+					shapesList.remove(shape);
 				}
 
 			}
