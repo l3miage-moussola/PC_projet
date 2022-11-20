@@ -69,6 +69,7 @@ class JDrawingTest {
 	void testImport() {
 		JDrawingFrame frame = new JDrawingFrame("TestFrame");
 		ImportFiles impfil = frame.new ImportFiles();
+		impfil.importFile();
 		
 		
 		assertNotEquals(null, frame);		

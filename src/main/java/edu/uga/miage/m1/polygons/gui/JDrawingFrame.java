@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -261,7 +260,7 @@ implements MouseListener, MouseMotionListener
 	SimpleShape movingShape=null;
 	public void mousePressed(MouseEvent evt)
 	{
-		movingShape = move.findInfExist(evt, mPanel, shapesList);
+		movingShape = move.isSelected(evt, shapesList);
 	}
 
 	/**
@@ -531,20 +530,14 @@ implements MouseListener, MouseMotionListener
 
 		private static final long serialVersionUID = 2434191698956589572L;
 
-		public SimpleShape findInfExist(MouseEvent evt , JPanel panel , List<SimpleShape> shapesList) {
-			Point p = evt.getPoint();
-
-			if(panel.findComponentAt(p)!=null) {
-				for(SimpleShape localSimpleShape : shapesList) {
-					if(localSimpleShape.getX()==p.x && localSimpleShape.getY()==p.y) {
-						panel.remove(panel.findComponentAt(p));
-						panel.validate();
-						return localSimpleShape;
-					}
-				}
-			}
-			return null;
-		}
+		public SimpleShape isSelected(MouseEvent evt, List<SimpleShape> shapesList) {
+            for(SimpleShape shape : shapesList) {
+                if( evt.getX()>= shape.getX() && evt.getX()<= shape.getX() +50 && evt.getY()>= shape.getY() && evt.getY()<= shape.getY() +50) {
+                    return shape;
+                }
+            }
+            return null;
+        }
 
 		public void moveShape(MouseEvent evt , JPanel panel , List<SimpleShape> shapesList,SimpleShape shape) {
 			if(shape!=null) {
