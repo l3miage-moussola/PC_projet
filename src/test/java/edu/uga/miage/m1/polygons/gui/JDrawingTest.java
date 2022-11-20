@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import edu.uga.miage.m1.polygons.gui.JDrawingFrame.ImportFiles;
+
 @ExtendWith(MockitoExtension.class)
 class JDrawingTest {
 	
@@ -42,7 +44,8 @@ class JDrawingTest {
 		MouseEvent evt2 = new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true);
 		frame.mousePressed(evt2);
 		frame.mouseExited(evt);
-
+		frame.mouseReleased(evt2);
+		ImportFiles impfil = frame.new ImportFiles();
 		frame.mouseMoved(new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true));
 		
 		
