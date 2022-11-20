@@ -29,6 +29,16 @@ class JDrawingTest {
 		
 		frame.mouseClicked(evt);
 		frame.mouseClicked(new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true));
+		
+		verify(evt, times(1)).getX();
+
+	}
+	@Test
+	void testVariousMouseActions(@Mock MouseEvent evt) {
+		JDrawingFrame frame = new JDrawingFrame("TestFrame");
+		
+		frame.mouseClicked(evt);
+		frame.mouseClicked(new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true));
 		frame.mouseDragged(evt);
 		frame.mouseDrag(null, 0, 0);
 		frame.mouseDown(null, 0, 0);
@@ -38,6 +48,9 @@ class JDrawingTest {
 
 	}
 	
+	
+	
+	
 	@Test
 	void testMouseMoved(@Mock MouseEvent evt) {
 		JDrawingFrame frame = new JDrawingFrame("TestFrame");
@@ -45,13 +58,23 @@ class JDrawingTest {
 		frame.mousePressed(evt2);
 		frame.mouseExited(evt);
 		frame.mouseReleased(evt2);
-		ImportFiles impfil = frame.new ImportFiles();
 		frame.mouseMoved(new MouseEvent(frame, 0, 0, 0, 150, 200, 0, true));
 		
 		
 		assertNotEquals(null, frame);		
 
 	}
+
+	@Test
+	void testImport() {
+		JDrawingFrame frame = new JDrawingFrame("TestFrame");
+		ImportFiles impfil = frame.new ImportFiles();
+		
+		
+		assertNotEquals(null, frame);		
+
+	}
+
 
 
 }

@@ -464,7 +464,7 @@ implements MouseListener, MouseMotionListener
 				for(int i=yDeb;i<yFin;i++) {
 					yoccur+=rep.charAt(i);
 				}	
-				System.out.print("Y: "+y);
+				logger.log(new LogRecord(Level.INFO, "Y: "+y));
 				y=Integer.parseInt(yoccur);
 
 				rep = rep.substring(rep.indexOf("</shape>")+5);
@@ -472,7 +472,8 @@ implements MouseListener, MouseMotionListener
 			}
 		}
 		private void jsonImport(String rep) {
-			System.out.print("Rep :" +rep);
+			logger.log(new LogRecord(Level.INFO, "Rep :" +rep));
+
 			while(rep.contains(TYPESTRING)) {
 				StringBuilder stringBuilderType = new StringBuilder();
 				
