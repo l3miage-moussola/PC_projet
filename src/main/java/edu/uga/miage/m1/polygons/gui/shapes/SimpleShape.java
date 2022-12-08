@@ -1,5 +1,7 @@
 package edu.uga.miage.m1.polygons.gui.shapes;
 
+import edu.uga.miage.m1.polygons.gui.persistence.Visitable;
+
 import java.awt.Graphics2D;
 
 /**
@@ -9,7 +11,7 @@ import java.awt.Graphics2D;
  * @author <a href="mailto:christophe.saint-marcel@univ-grenoble-alpes.fr">Christophe</a>
  *
  */
-public interface SimpleShape
+public interface SimpleShape extends Visitable
 {
 
     /**
@@ -21,4 +23,6 @@ public interface SimpleShape
     int getX();
     
     int getY();
+
+    void move(int x, int y);
 }

@@ -17,7 +17,7 @@ public class XMLVisitor implements Visitor {
     @Override
     public void visit(Circle circle) {
     	this.representation="<shape>"
-    			+ "<type>circle</type>"
+    			+ "<type>CIRCLE</type>"
     			+ "<x>"+circle.getX()+"</x>"
     			+ "<y>"+circle.getY()+"</y>"
     			+ "</shape>";
@@ -26,7 +26,7 @@ public class XMLVisitor implements Visitor {
     @Override
     public void visit(Square square) {
     	this.representation="<shape>"
-    			+ "<type>square</type>"
+    			+ "<type>SQUARE</type>"
     			+ "<x>"+square.getX()+"</x>"
     			+ "<y>"+square.getY()+"</y>"
     			+ "</shape>";
@@ -35,7 +35,7 @@ public class XMLVisitor implements Visitor {
     @Override
     public void visit(Triangle triangle) {
     	this.representation="<shape>"
-    			+ "<type>triangle</type>"
+    			+ "<type>TRIANGLE</type>"
     			+ "<x>"+triangle.getX()+"</x>"
     			+ "<y>"+triangle.getY()+"</y>"
     			+ "</shape>";
