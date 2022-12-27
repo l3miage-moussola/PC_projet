@@ -35,7 +35,7 @@ import edu.uga.miage.m1.polygons.gui.persistence.Visitor;
  */
 public class Triangle extends AbstractShape {
 
-    protected Triangle(int x, int y) {
+    public Triangle(int x, int y) {
         super(x, y);
     }
 

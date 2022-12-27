@@ -29,7 +29,7 @@ import edu.uga.miage.m1.polygons.gui.persistence.Visitor;
 
 public class Circle extends AbstractShape{
 
-    protected Circle(int x, int y) {
+    public Circle(int x, int y) {
         super(x, y);
     }
 

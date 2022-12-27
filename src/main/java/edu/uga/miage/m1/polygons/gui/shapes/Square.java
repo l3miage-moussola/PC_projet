@@ -36,7 +36,7 @@ import edu.uga.miage.m1.polygons.gui.persistence.Visitor;
 public class Square extends AbstractShape {
 
 
-    protected Square(int x, int y) {
+    public Square(int x, int y) {
         super(x, y);
     }
 

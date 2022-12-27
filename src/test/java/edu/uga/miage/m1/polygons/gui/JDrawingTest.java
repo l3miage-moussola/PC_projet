@@ -5,11 +5,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.xml.sax.SAXException;
 
 import edu.uga.miage.m1.polygons.gui.JDrawingFrame.ImportFiles;
 
@@ -69,7 +73,12 @@ class JDrawingTest {
 	void testImport() {
 		JDrawingFrame frame = new JDrawingFrame("TestFrame");
 		ImportFiles impfil = frame.new ImportFiles();
-		impfil.importFile();
+		try {
+			impfil.importFile();
+		} catch (ParserConfigurationException | IOException | SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		assertNotEquals(null, frame);		
