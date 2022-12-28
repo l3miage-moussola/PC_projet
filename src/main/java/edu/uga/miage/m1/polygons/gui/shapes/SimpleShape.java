@@ -23,6 +23,9 @@ public interface SimpleShape extends Visitable
     int getX();
     
     int getY();
+    
+    void setX(int x);
+    void setY(int y);
 
     void move(int x, int y);
 }

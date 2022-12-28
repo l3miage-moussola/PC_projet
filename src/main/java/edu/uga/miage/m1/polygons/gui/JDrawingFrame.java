@@ -26,6 +26,8 @@ import java.awt.FileDialog;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -52,6 +54,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -89,7 +97,8 @@ implements MouseListener, MouseMotionListener
 	private static final  String SLASHTYPESTRING = "/type";
 	private static final  String TYPESTRING ="type";
 	boolean groupeCreation = false;
-	
+	UndoManager undoManager = new UndoManager();
+
 	
 
 
@@ -115,8 +124,17 @@ implements MouseListener, MouseMotionListener
 		mPanel.setMinimumSize(new Dimension(400, 400));
 		mPanel.addMouseListener(this);
 		mPanel.addMouseMotionListener(this);
+		mPanel.addKeyListener(new KeyAdapter() {
+			   public void keyPressed(KeyEvent e) {
+			       if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) {
+			           if (!shapesList.isEmpty()) {
+			        	   annuler();
+			           }
+			       }
+			   }
+			});
 		mLabel = new JLabel(" ", SwingConstants.LEFT);
-
+		
 		// Fills the panel
 		setLayout(new BorderLayout());
 		add(mToolbar, BorderLayout.NORTH);
@@ -131,6 +149,7 @@ implements MouseListener, MouseMotionListener
 		addExport("JSON");
 		addImport();
 		addGroupe();
+		addUndo();
 		setPreferredSize(new Dimension(400, 400));
 	}
 	
@@ -157,6 +176,29 @@ implements MouseListener, MouseMotionListener
 		mToolbar.add(button);
 		mToolbar.validate();
 		repaint();
+	}
+	private void addUndo() {
+		JButton undoButton = new JButton("Annuler");
+		eButtons.put("Annuler", undoButton);
+		undoButton.addActionListener(new ActionListener() {
+			   public void actionPerformed(ActionEvent e) {
+			       if (shapesList.size()>0) {
+			           annuler();
+			       }
+			   }
+			});
+		mToolbar.add(undoButton);
+		mToolbar.validate();
+	}
+	private void annuler() {
+		System.out.println("undo");
+		mPanel.repaint();
+		shapesList.clear();
+		for(SimpleShape shape : shapesListPrev) {
+				shapesList.add(shape);
+                Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+                shape.draw(g2);
+        }
 	}
 	private void addExport(String exportType) {
 		JButton button = new JButton(exportType);
@@ -236,6 +278,8 @@ implements MouseListener, MouseMotionListener
 		mToolbar.validate();
 
 	}
+	
+	
 
 	/**
 	 * Implements method for the <tt>MouseListener</tt> interface to
@@ -243,6 +287,7 @@ implements MouseListener, MouseMotionListener
 	 * @param evt The associated mouse event.
 	 **/
 	List<SimpleShape> shapesList = new ArrayList<>();
+	List<SimpleShape> shapesListPrev = new ArrayList<>();
 	public void mouseClicked(MouseEvent evt)
 	{
 
@@ -254,6 +299,7 @@ implements MouseListener, MouseMotionListener
 			shape.draw(g2);
 		}
 	}
+	
 
 	/**
 	 * Implements an empty method for the <tt>MouseListener</tt> interface.
@@ -293,6 +339,10 @@ implements MouseListener, MouseMotionListener
 	 **/
 	public void mouseReleased(MouseEvent evt)
 	{
+		shapesListPrev.clear();
+		for(SimpleShape  shape : shapesList ) {
+			shapesListPrev.add(shape);
+		}
 		mPanel.validate();
 		move.moveShape(evt, mPanel, shapesList, movingShape);
 		for(SimpleShape shape : shapesList) {
