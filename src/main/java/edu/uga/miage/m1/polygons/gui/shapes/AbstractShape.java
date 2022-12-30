@@ -4,24 +4,13 @@ public abstract class AbstractShape implements SimpleShape{
 
     protected int x;
     protected int y;
-    protected int height;
-    protected int width;
+    protected boolean selected;
 
     public AbstractShape(int x, int y){
         this.x = x;
         this.y = y;
+        this.selected=false;
     }
-    
-    public AbstractShape(int x, int y,int height,int width) {
-    	this.height=height;
-    	this.width=width;
-    	this.x=x;
-    	this.y=y;
-    }
-
-
-
-
 
     @Override
     public int getX() {
@@ -40,12 +29,13 @@ public abstract class AbstractShape implements SimpleShape{
     }
     
     @Override
-    public int getHeight() {
-		return this.height ;
-    
-    };
+    public void setSelected(int x , int y) {
+    		selected = x>= this.x && x<= this.x +50 && y>= this.y && y<= this.y +50;
+    }
     @Override
-    public int getWidth() {
-    	return this.width;
-    };
+	public boolean getSelected() {
+		return selected ;
+    	
+    }
+    
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public class FormesGroupe extends AbstractShape {
 
 	protected FormesGroupe() {
-		super(0,0,0,0);
+		super(0,0);
 		this.shapesList = new ArrayList<>();
 	}
 	private static final long serialVersionUID = 5368906687199772837L;
@@ -24,7 +24,9 @@ public class FormesGroupe extends AbstractShape {
 
 	@Override
 	public void draw(Graphics2D g2) {
-
+		for(SimpleShape  shape : shapesList) {
+			shape.draw(g2);
+		}
 	}
 
 	@Override
@@ -81,4 +83,15 @@ public class FormesGroupe extends AbstractShape {
 	public void accept(Visitor visitor) {
 
 	}
+	@Override
+	public void move(int x,int y ) {
+		for(SimpleShape shape : shapesList) {
+			shape.move(shape.getX()+x,shape.getY()+ y);
+		}
+	}
+	
+    @Override
+    public void setSelected(int x , int y) {
+    		super.selected = x>= getXmin()-50 && x<= getXmax() +50 && y>= getYmin()-50 && y<= getYmax() +50;
+    }
 }

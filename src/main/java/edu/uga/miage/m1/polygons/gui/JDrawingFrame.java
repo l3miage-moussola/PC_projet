@@ -295,14 +295,11 @@ implements MouseListener, MouseMotionListener
 		if (mPanel.contains(evt.getX(), evt.getY()))
 		{
 			if(groupeCreation) {
-					SimpleShape selectedShape = move.isSelected(evt, shapesList);
-					if(selectedShape!=null) {
-						System.out.print(groupeCreation);
-						groupe.add(selectedShape);
-						for(SimpleShape shape : groupe.getGroupeForms() ) {
-							System.out.print(shape);
+					for(SimpleShape shape :shapesList) {
+						shape.setSelected(evt.getX(), evt.getY());
+						if(shape.getSelected()) {
+							groupe.add(shape);
 						}
-						
 					}		
 			}
 			else {
@@ -341,18 +338,29 @@ implements MouseListener, MouseMotionListener
 	 * shape dragging.
 	 * @param evt The associated mouse event.
 	 **/
-	private Move move= new Move();
 	SimpleShape movingShape=null;
 	int xDeb=0;
 	int yDeb=0;
+	boolean isShapeSlected;
 	public void mousePressed(MouseEvent evt)
 	{
-		movingShape = move.isSelected(evt, shapesList);
-		if(evt.getX()<=groupe.getXmax()&& evt.getX()>=groupe.getXmin() &&evt.getY()<=groupe.getYmax() && evt.getY()>=groupe.getYmin()) {
-			moveGroupe=true;
-			xDeb=evt.getX();
-			yDeb=evt.getY();
+		if(!groupe.getGroupeForms().isEmpty()) {
+			groupe.setSelected(evt.getX(), evt.getY());
+			if(groupe.getSelected()){
+				xDeb=evt.getX();
+				yDeb=evt.getY();
+				}
+		}
+
+		if(!groupe.getSelected()) {
+			for(SimpleShape shape : shapesList) {
+				shape.setSelected(evt.getX(), evt.getY());
+				isShapeSlected=shape.getSelected();
 			}
+		}
+
+		
+
 	}
 
 	/**
@@ -363,23 +371,23 @@ implements MouseListener, MouseMotionListener
 	boolean moveGroupe=false;
 	public void mouseReleased(MouseEvent evt)
 	{
-		if(!groupeCreation) {
-			if(!moveGroupe) {
-				move.moveShape(evt, mPanel, shapesList, movingShape);
+		Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+		if(!groupeCreation && mPanel.contains(evt.getX(), evt.getY())) {
+			if(isShapeSlected && !groupe.getSelected()) {
 				for(SimpleShape shape : shapesList) {
-		            if (mPanel.contains(evt.getX(), evt.getY()))
-		            {
-		                Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-		                shape.draw(g2);
-		            }
+		                if(shape.getSelected()) {
+		                	shape.move(evt.getX(), evt.getY());
+		                	shape.draw(g2);
+		                }
 		        }
+				isShapeSlected=false;
 			}
 			else {
-				for(SimpleShape shape : groupe.getGroupeForms()) {
-					shape.move(shape.getX()+(evt.getX()-xDeb), shape.getY()+(evt.getY()-yDeb));
-					moveGroupe=false;
-				}
+				groupe.move(evt.getX()-xDeb, evt.getY()-yDeb);
+				groupe.draw(g2);
 			}
+			
+			
 	
 		}
 
@@ -576,7 +584,7 @@ implements MouseListener, MouseMotionListener
 		}
 	}
 
-	public class Move implements Serializable
+	/*public class Move implements Serializable
 	{
 
 		private static final long serialVersionUID = 2434191698956589572L;
@@ -601,5 +609,5 @@ implements MouseListener, MouseMotionListener
 
 			}
 		}
-	}
+	}*/
 }
