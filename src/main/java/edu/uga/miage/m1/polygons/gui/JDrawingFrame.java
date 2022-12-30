@@ -55,13 +55,11 @@ import javax.swing.SwingConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 
 import edu.uga.miage.m1.polygons.gui.persistence.*;
 import edu.uga.miage.m1.polygons.gui.shapes.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -248,10 +246,24 @@ implements MouseListener, MouseMotionListener
 
 		if (mPanel.contains(evt.getX(), evt.getY()))
 		{
-			Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-			SimpleShape shape = ShapeFactory.createShape(evt.getX(), evt.getY(), mSelected);
-			shapesList.add(shape);
-			shape.draw(g2);
+			if(groupeCreation) {
+				SimpleShape selectedShape = move.selectedShape(evt, shapesList);
+				if(selectedShape!=null) {
+					System.out.print(groupeCreation);
+					groupe.add(selectedShape);
+					for(SimpleShape shape : groupe.getGroupeForms() ) {
+						System.out.print(shape);
+					}
+
+				}
+			}
+			else {
+				Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+				SimpleShape shape = ShapeFactory.createShape(evt.getX(), evt.getY(), mSelected);
+				shapesList.add(shape);
+				shape.draw(g2);
+			}
+
 		}
 	}
 
@@ -283,7 +295,7 @@ implements MouseListener, MouseMotionListener
 	SimpleShape movingShape=null;
 	public void mousePressed(MouseEvent evt)
 	{
-		movingShape = move.isSelected(evt, shapesList);
+		movingShape = move.selectedShape(evt, shapesList);
 	}
 
 	/**
@@ -314,7 +326,7 @@ implements MouseListener, MouseMotionListener
 	{
 		if(groupeCreation) {
 
-            SimpleShape newShape = move.isSelected(evt, shapesList);
+            SimpleShape newShape = move.selectedShape(evt, shapesList);
             if(newShape!=null && !(groupe.getGroupeForms().stream().anyMatch(e -> e.getX() == newShape.getX() && e.getY()==newShape.getY()))) {
                 
             	groupe.add(newShape);            
@@ -509,7 +521,7 @@ implements MouseListener, MouseMotionListener
 
 		private static final long serialVersionUID = 2434191698956589572L;
 
-		public SimpleShape isSelected(MouseEvent evt, List<SimpleShape> shapesList) {
+		public SimpleShape selectedShape(MouseEvent evt, List<SimpleShape> shapesList) {
             for(SimpleShape shape : shapesList) {
                 if( evt.getX()>= shape.getX() && evt.getX()<= shape.getX() +50 && evt.getY()>= shape.getY() && evt.getY()<= shape.getY() +50) {
                     return shape;

@@ -19,10 +19,24 @@ public interface SimpleShape extends Visitable
      * @param g2 The graphics object used for painting.
      **/
     void draw(Graphics2D g2);
-    
+
     int getX();
-    
+
     int getY();
 
     void move(int x, int y);
+
+    void select();
+
+    void unselect();
+
+    void group();
+
+    int getWidth();
+
+    int getHeight();
+
+    boolean isSelected();
+
+    boolean isInside(int x, int y);
 }
