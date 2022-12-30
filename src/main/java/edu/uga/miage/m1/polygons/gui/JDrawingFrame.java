@@ -237,7 +237,8 @@ implements MouseListener, MouseMotionListener
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                groupeCreation = true;
+                groupeCreation = !groupeCreation;
+                System.out.println(groupeCreation);
             }
             
         });
@@ -293,11 +294,26 @@ implements MouseListener, MouseMotionListener
 
 		if (mPanel.contains(evt.getX(), evt.getY()))
 		{
-			Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-			SimpleShape shape = ShapeFactory.createShape(evt.getX(), evt.getY(), mSelected);
-			shapesList.add(shape);
-			shape.draw(g2);
+			if(groupeCreation) {
+					SimpleShape selectedShape = move.isSelected(evt, shapesList);
+					if(selectedShape!=null) {
+						System.out.print(groupeCreation);
+						groupe.add(selectedShape);
+						for(SimpleShape shape : groupe.getGroupeForms() ) {
+							System.out.print(shape);
+						}
+						
+					}		
+			}
+			else {
+				Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+				SimpleShape shape = ShapeFactory.createShape(evt.getX(), evt.getY(), mSelected);
+				shapesList.add(shape);
+				shape.draw(g2);
+			}
+
 		}
+
 	}
 	
 
@@ -327,9 +343,16 @@ implements MouseListener, MouseMotionListener
 	 **/
 	private Move move= new Move();
 	SimpleShape movingShape=null;
+	int xDeb=0;
+	int yDeb=0;
 	public void mousePressed(MouseEvent evt)
 	{
 		movingShape = move.isSelected(evt, shapesList);
+		if(evt.getX()<=groupe.getXmax()&& evt.getX()>=groupe.getXmin() &&evt.getY()<=groupe.getYmax() && evt.getY()>=groupe.getYmin()) {
+			moveGroupe=true;
+			xDeb=evt.getX();
+			yDeb=evt.getY();
+			}
 	}
 
 	/**
@@ -337,21 +360,29 @@ implements MouseListener, MouseMotionListener
 	 * shape dragging.
 	 * @param evt The associated mouse event.
 	 **/
+	boolean moveGroupe=false;
 	public void mouseReleased(MouseEvent evt)
 	{
-		shapesListPrev.clear();
-		for(SimpleShape  shape : shapesList ) {
-			shapesListPrev.add(shape);
+		if(!groupeCreation) {
+			if(!moveGroupe) {
+				move.moveShape(evt, mPanel, shapesList, movingShape);
+				for(SimpleShape shape : shapesList) {
+		            if (mPanel.contains(evt.getX(), evt.getY()))
+		            {
+		                Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+		                shape.draw(g2);
+		            }
+		        }
+			}
+			else {
+				for(SimpleShape shape : groupe.getGroupeForms()) {
+					shape.move(shape.getX()+(evt.getX()-xDeb), shape.getY()+(evt.getY()-yDeb));
+					moveGroupe=false;
+				}
+			}
+	
 		}
-		mPanel.validate();
-		move.moveShape(evt, mPanel, shapesList, movingShape);
-		for(SimpleShape shape : shapesList) {
-            if (mPanel.contains(evt.getX(), evt.getY()))
-            {
-                Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-                shape.draw(g2);
-            }
-        }
+
 	}
 
 	/**
@@ -362,15 +393,6 @@ implements MouseListener, MouseMotionListener
 	FormesGroupe groupe = (FormesGroupe) ShapeFactory.createShape(0,0,TypeShape.GROUP);
 	public void mouseDragged(MouseEvent evt)
 	{
-		if(groupeCreation) {
-
-            SimpleShape newShape = move.isSelected(evt, shapesList);
-            if(newShape!=null && !(groupe.getGroupeForms().stream().anyMatch(e -> e.getX() == newShape.getX() && e.getY()==newShape.getY()))) {
-                
-            	groupe.add(newShape);            
-            }
-
-        }
         mPanel.repaint();
         
 	}
