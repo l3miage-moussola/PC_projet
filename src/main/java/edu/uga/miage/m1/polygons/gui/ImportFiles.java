@@ -60,7 +60,7 @@ public class ImportFiles{
 			String type = node.getElementsByTagName("type").item(0).getTextContent();
 			int x = Integer.parseInt(node.getElementsByTagName("x").item(0).getTextContent());
 			int y = Integer.parseInt(node.getElementsByTagName("y").item(0).getTextContent());
-			SimpleShape simpleShape = ShapeFactory.createShape(x,y, TypeShape.valueOf(type));
+			SimpleShape simpleShape = ShapeFactory.createShape(x,y, TypeShape.valueOf(type),null);
 			shapesList.add(simpleShape);
 
 
@@ -97,7 +97,7 @@ public class ImportFiles{
 
 			rep=rep.substring(rep.indexOf("}")+2);
 
-			shapesList.add(ShapeFactory.createShape(x,y, TypeShape.valueOf(type.toUpperCase())));
+			shapesList.add(ShapeFactory.createShape(x,y, TypeShape.valueOf(type.toUpperCase()),null));
 		}
 	}
 

@@ -30,6 +30,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,6 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -76,8 +78,8 @@ implements MouseListener, MouseMotionListener
 	private JLabel mLabel;
 	private ActionListener mReusableActionListener = new ShapeActionListener();
 	private static final Logger logger = Logger.getLogger(JDrawingFrame.class.getName());
-	boolean groupeCreation = false;
-	UndoManager undoManager = new UndoManager();
+	private boolean groupeCreation = false;
+	private BufferedImage buff ;
 
 	
 
@@ -125,6 +127,7 @@ implements MouseListener, MouseMotionListener
 		addShape(TypeShape.SQUARE, new ImageIcon(getClass().getResource("images/square.png")));
 		addShape(TypeShape.TRIANGLE, new ImageIcon(getClass().getResource("images/triangle.png")));
 		addShape(TypeShape.CIRCLE, new ImageIcon(getClass().getResource("images/circle.png")));
+		addShape(TypeShape.BESTSHAPE, new ImageIcon(getClass().getResource("images/underc.png")));
 		addExport("XML");
 		addExport("JSON");
 		addImport();
@@ -213,7 +216,7 @@ implements MouseListener, MouseMotionListener
             public void actionPerformed(ActionEvent e) {
             	groupeCreation=!groupeCreation;
             	if(!groupeCreation) {
-                	FormesGroupe groupe = (FormesGroupe) ShapeFactory.createShape(0,0,TypeShape.GROUP);
+                	FormesGroupe groupe = (FormesGroupe) ShapeFactory.createShape(0,0,TypeShape.GROUP,null);
                 	shapesList.add(groupe);
                 	List<SimpleShape> shapesToRemove = new ArrayList<>();
                 	for(SimpleShape shape : shapesList) {
@@ -294,7 +297,18 @@ implements MouseListener, MouseMotionListener
 			}
 			else {
 				Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-				SimpleShape shape = ShapeFactory.createShape(evt.getX(), evt.getY(), mSelected);
+				String path ;
+				if(mSelected==TypeShape.BESTSHAPE) {
+					Export export = new Export();
+				    path = export.setFileLocation(getName(), new FileNameExtensionFilter("PNG file", "png"));
+					try {
+					 buff =ImageIO.read(new File(path));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				 
+				SimpleShape shape = ShapeFactory.createShape(evt.getX(), evt.getY(), mSelected, buff);
 				shapesList.add(shape);
 				shape.draw(g2);
 			}

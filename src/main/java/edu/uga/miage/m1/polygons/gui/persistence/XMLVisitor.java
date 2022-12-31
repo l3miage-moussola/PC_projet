@@ -1,5 +1,6 @@
 package edu.uga.miage.m1.polygons.gui.persistence;
 
+import edu.uga.miage.m1.polygons.gui.shapes.BestShape;
 import edu.uga.miage.m1.polygons.gui.shapes.Circle;
 import edu.uga.miage.m1.polygons.gui.shapes.Square;
 import edu.uga.miage.m1.polygons.gui.shapes.Triangle;
@@ -57,4 +58,10 @@ public class XMLVisitor implements Visitor {
     public String getRepresentation() {
         return representation;
     }
+
+	@Override
+	public void visit(BestShape image) {
+		// TODO Auto-generated method stub
+		
+	}
 }

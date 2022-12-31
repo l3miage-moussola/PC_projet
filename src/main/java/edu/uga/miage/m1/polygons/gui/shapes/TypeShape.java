@@ -4,5 +4,6 @@ public enum TypeShape {
     TRIANGLE,
     SQUARE,
     CIRCLE,
-    GROUP
+    GROUP,
+    BESTSHAPE
 }
