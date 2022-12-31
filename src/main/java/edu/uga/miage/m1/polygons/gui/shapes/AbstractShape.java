@@ -24,18 +24,24 @@ public abstract class AbstractShape implements SimpleShape{
 
     @Override
     public void move(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.x += x;
+        this.y += y;
     }
     
     @Override
-    public void setSelected(int x , int y) {
-    		selected = x>= this.x && x<= this.x +50 && y>= this.y && y<= this.y +50;
+    public void setSelected() {
+    	System.out.println("Set "+this);
+    	this.selected=!this.selected;
+    	System.out.println("Selected "+this);
     }
     @Override
 	public boolean getSelected() {
-		return selected ;
+		return this.selected ;
     	
+    }
+    @Override
+    public boolean isInside(int x , int y) {
+    	return x>= this.x-50 && x<= this.x +50 && y>= this.y-50 && y<= this.y +50;
     }
     
 }

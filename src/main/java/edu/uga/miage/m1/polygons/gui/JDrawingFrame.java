@@ -49,6 +49,7 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,6 +57,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -178,7 +180,7 @@ implements MouseListener, MouseMotionListener
 		repaint();
 	}
 	private void addUndo() {
-		JButton undoButton = new JButton("Annuler");
+		JButton undoButton = new JButton("clear");
 		eButtons.put("Annuler", undoButton);
 		undoButton.addActionListener(new ActionListener() {
 			   public void actionPerformed(ActionEvent e) {
@@ -191,14 +193,8 @@ implements MouseListener, MouseMotionListener
 		mToolbar.validate();
 	}
 	private void annuler() {
-		System.out.println("undo");
 		mPanel.repaint();
 		shapesList.clear();
-		for(SimpleShape shape : shapesListPrev) {
-				shapesList.add(shape);
-                Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-                shape.draw(g2);
-        }
 	}
 	private void addExport(String exportType) {
 		JButton button = new JButton(exportType);
@@ -237,8 +233,26 @@ implements MouseListener, MouseMotionListener
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                groupeCreation = !groupeCreation;
-                System.out.println(groupeCreation);
+            	groupeCreation=!groupeCreation;
+            	if(!groupeCreation) {
+                	FormesGroupe groupe = (FormesGroupe) ShapeFactory.createShape(0,0,TypeShape.GROUP);
+                	shapesList.add(groupe);
+                	List<SimpleShape> shapesToRemove = new ArrayList<>();
+                	for(SimpleShape shape : shapesList) {
+                		if(shape.getSelected()) {
+                			groupe.add(shape);
+                			shapesToRemove.add(shape);
+                			
+                		}
+                	
+            	}
+                	for(SimpleShape shape : shapesToRemove) {
+                		shapesList.remove(shape);
+                	}
+
+}
+            	
+                
             }
             
         });
@@ -288,19 +302,17 @@ implements MouseListener, MouseMotionListener
 	 * @param evt The associated mouse event.
 	 **/
 	List<SimpleShape> shapesList = new ArrayList<>();
-	List<SimpleShape> shapesListPrev = new ArrayList<>();
 	public void mouseClicked(MouseEvent evt)
 	{
 
 		if (mPanel.contains(evt.getX(), evt.getY()))
 		{
 			if(groupeCreation) {
-					for(SimpleShape shape :shapesList) {
-						shape.setSelected(evt.getX(), evt.getY());
-						if(shape.getSelected()) {
-							groupe.add(shape);
-						}
-					}		
+				for(SimpleShape shape : shapesList) {
+					if(shape.isInside(evt.getX(), evt.getY())) {
+						shape.setSelected();
+					}
+				}		
 			}
 			else {
 				Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
@@ -344,23 +356,24 @@ implements MouseListener, MouseMotionListener
 	boolean isShapeSlected;
 	public void mousePressed(MouseEvent evt)
 	{
-		if(!groupe.getGroupeForms().isEmpty()) {
-			groupe.setSelected(evt.getX(), evt.getY());
-			if(groupe.getSelected()){
-				xDeb=evt.getX();
-				yDeb=evt.getY();
-				}
-		}
-
-		if(!groupe.getSelected()) {
+		if(!groupeCreation) {
+			xDeb=evt.getX();
+			yDeb=evt.getY();
 			for(SimpleShape shape : shapesList) {
-				shape.setSelected(evt.getX(), evt.getY());
-				isShapeSlected=shape.getSelected();
-			}
+				if(shape.isInside(evt.getX(), evt.getY())){
+					shape.setSelected();
+				}
+				
+			}	
 		}
-
-		
-
+	}
+	
+	private void ClearAndDraw() {
+		Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+		g2.clearRect(0, 0, mPanel.getWidth(), mPanel.getHeight());
+		for(SimpleShape shape : shapesList) {
+			shape.draw(g2);
+		}
 	}
 
 	/**
@@ -370,26 +383,20 @@ implements MouseListener, MouseMotionListener
 	 **/
 	boolean moveGroupe=false;
 	public void mouseReleased(MouseEvent evt)
-	{
-		Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+	{	
+		
 		if(!groupeCreation && mPanel.contains(evt.getX(), evt.getY())) {
-			if(isShapeSlected && !groupe.getSelected()) {
-				for(SimpleShape shape : shapesList) {
-		                if(shape.getSelected()) {
-		                	shape.move(evt.getX(), evt.getY());
-		                	shape.draw(g2);
-		                }
-		        }
-				isShapeSlected=false;
-			}
-			else {
-				groupe.move(evt.getX()-xDeb, evt.getY()-yDeb);
-				groupe.draw(g2);
+			for(SimpleShape shape : shapesList) {
+				if(shape.getSelected()) {
+					shape.move((evt.getX()-xDeb),(evt.getY()-yDeb));
+					shape.setSelected();
+				}
 			}
 			
 			
 	
 		}
+		ClearAndDraw();
 
 	}
 
@@ -398,11 +405,8 @@ implements MouseListener, MouseMotionListener
 	 * move a dragged shape.
 	 * @param evt The associated mouse event.
 	 **/
-	FormesGroupe groupe = (FormesGroupe) ShapeFactory.createShape(0,0,TypeShape.GROUP);
 	public void mouseDragged(MouseEvent evt)
-	{
-        mPanel.repaint();
-        
+	{   
 	}
 
 	/**
@@ -445,9 +449,28 @@ implements MouseListener, MouseMotionListener
 	}
 
 	private class Export {
+		public String setFileLocation(String fileName,FileNameExtensionFilter filter) {
+			 JFileChooser fileChooser = new JFileChooser();
+		        fileChooser.setDialogTitle("Veuillez choisir l'emplacement de votre fichier");
+		        fileChooser.setSelectedFile(new File(fileName));
+		        fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+		        fileChooser.setFileFilter(filter);
+		        fileChooser.setAcceptAllFileFilterUsed(false);
+		        int returnValue = fileChooser.showDialog(null,"Save");
+		        if (returnValue == JFileChooser.APPROVE_OPTION) {
+		            return fileChooser.getSelectedFile().getAbsolutePath();
+		        }
+			return null;
+		}
 		public void  convertToXml(List<SimpleShape> shapesList) throws IOException {
+			String fileLocation = setFileLocation("shapes.xml", new FileNameExtensionFilter("XML file", "xml"));
+			if(fileLocation!=null) {
+				if(!fileLocation.endsWith(".xml")) {
+					fileLocation+=".xml";
+				}
+			}
 			XMLVisitor visitor = new XMLVisitor();
-			File file = new File("shapes.xml");
+			File file = new File(fileLocation);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n <root>\n");
 			for(SimpleShape localSimpleShape : shapesList) {
@@ -469,8 +492,14 @@ implements MouseListener, MouseMotionListener
 
 		}
 		public void convertToJson(List<SimpleShape> shapesList) {
+			String fileLocation = setFileLocation("shapes.json", new FileNameExtensionFilter("JSON file", "json"));
+			if(fileLocation!=null) {
+				if(!fileLocation.endsWith(".json")) {
+					fileLocation+=".json";
+				}
+			}
 			JSonVisitor visitor = new JSonVisitor();
-			File file = new File("shapesJson.json");
+			File file = new File(fileLocation);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("{\n \"Shapes\":[\n");
 

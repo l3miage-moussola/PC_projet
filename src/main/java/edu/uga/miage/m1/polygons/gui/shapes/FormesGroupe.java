@@ -86,12 +86,12 @@ public class FormesGroupe extends AbstractShape {
 	@Override
 	public void move(int x,int y ) {
 		for(SimpleShape shape : shapesList) {
-			shape.move(shape.getX()+x,shape.getY()+ y);
+			shape.move(x,y);
 		}
 	}
 	
     @Override
-    public void setSelected(int x , int y) {
-    		super.selected = x>= getXmin()-50 && x<= getXmax() +50 && y>= getYmin()-50 && y<= getYmax() +50;
+    public boolean isInside(int x , int y) {
+    		return x>= getXmin()-50 && x<= getXmax() +50 && y>= getYmin()-50 && y<= getYmax() +50;
     }
 }
