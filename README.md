@@ -78,7 +78,10 @@ Nous avons donc fait le choix cette fois-ci de nous concentrer sur la correction
 
 ## Conclusion
 
-Sur les attendus, le fait de rattraper notre retard sur certains points nous en a fait prendre encore plus sur d'autres. Le temps passé à faire fonctionner ce qui ne fonctionnait pas durant les dernières itérations et à refactorer n'a pas pu être utilisé pour les tests ni pour l'intégration du jar de l'autre groupe.
+En ce qui concerne les attendus : les features principales fonctionnent : Poser des formes, créer des groupes, déplacer des formes, déplacer des groupes, exporter au format JSon, exporter au format XML, importer un dessin et génerer un jar. 
+Regard critique sur notre production : Les contraintes ne sont pas toutes respectées. Les patrons de conceptions imposés ont été utilisés, mais la dette technique n'a pas été analysée durant cette dernière itération. Les tests n'ont pas été implémentés non plus. L'utilisation de notre application n'est pas agréable à cause de la disparition des formes durant un drag and drop. Il manque également l'utilisation du travail d'un autre groupe.
+Reflexions sur les causes de ces limites : Le retard considérable pris durant l'itération précédente nous a laissé un choix dificile entre poursuivre le projet sans les fonctionalités de base ou rattraper notre retard mais ne pas pouvoir adresser les tâches assignées pour la dernière itération.
+le fait de rattraper notre retard sur certains points nous en a fait prendre encore plus sur d'autres. Le temps passé à faire fonctionner ce qui ne fonctionnait pas durant les dernières itérations et à refactorer n'a pas pu être utilisé pour les tests ni pour l'intégration du jar de l'autre groupe.
 Ce projet nous a permis d'expérimenter différents patrons de conception.
 Il nous a aussi appris à faire du clean code et à utiliser les tests unitaires pour vérifier le bon fonctionnement de notre code.
 
