@@ -1,3 +1,5 @@
+git : https://github.com/l3miage-moussola/PC_projet
+
 # Projet PC
 ## Introduction
 
@@ -48,7 +50,7 @@ Pour supprimer toutes les formes sur l'espace de dessin, cliquez sur "clear"
 
 ### Ajouter une autre forme
 Pour ajouter une autre forme, cliquez sur l'icone jaune (icône chantier), puis selectionnez l'image png correspondant à la forme souhaitée. Nous vous avons fourni l'image de notre groupe ".\src\main\resources\edu\uga\miage\m1\polygons\gui\images\g1_5.png" pour vos tests.
-
+Pour déplcer cette forme, il faut drag and drop depuis l'angle supérieur gauche de cette image.
 
 ## Documentation de conception
 - Visiteur (pour l'enregistrement du dessin en XML ou JSON)
@@ -82,6 +84,5 @@ En ce qui concerne les attendus : les features principales fonctionnent : Poser 
 Regard critique sur notre production : Les contraintes ne sont pas toutes respectées. Les patrons de conceptions imposés ont été utilisés, mais la dette technique n'a pas été analysée durant cette dernière itération. Les tests n'ont pas été implémentés non plus. L'utilisation de notre application n'est pas agréable à cause de la disparition des formes durant un drag and drop. Il manque également l'utilisation du travail d'un autre groupe.
 Reflexions sur les causes de ces limites : Le retard considérable pris durant l'itération précédente nous a laissé un choix dificile entre poursuivre le projet sans les fonctionalités de base ou rattraper notre retard mais ne pas pouvoir adresser les tâches assignées pour la dernière itération.
 le fait de rattraper notre retard sur certains points nous en a fait prendre encore plus sur d'autres. Le temps passé à faire fonctionner ce qui ne fonctionnait pas durant les dernières itérations et à refactorer n'a pas pu être utilisé pour les tests ni pour l'intégration du jar de l'autre groupe.
-Ce projet nous a permis d'expérimenter différents patrons de conception.
-Il nous a aussi appris à faire du clean code et à utiliser les tests unitaires pour vérifier le bon fonctionnement de notre code.
+Finalement, ce projet nous a permis d'expérimenter différents patrons de conception et de constater qu'il est difficile de concilier fonctionalité, maintenabilité, clean code, testabilité et documentation en même temps.
 
