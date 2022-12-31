@@ -43,35 +43,39 @@ Pour exporter le dessin, il suffit de cliquer sur "XML" ou sur "JSON" selon le f
 ### Charger un dessin
 Pour charger un dessin, il suffit de cliquer sur "Import" puis de selectionner le fichier à importer..
 
+### Clear
+Pour supprimer toutes les formes sur l'espace de dessin, cliquez sur "clear"
+
+### Ajouter une autre forme
+Pour ajouter une autre forme, cliquez sur l'icone jaune (icône chantier), puis selectionnez l'image png correspondant à la forme souhaitée. Nous vous avons fourni l'image de notre groupe ".\src\main\resources\edu\uga\miage\m1\polygons\gui\images\g1_5.png" pour vos tests.
+
+
 ## Documentation de conception
 - Visiteur (pour l'enregistrement du dessin en XML ou JSON)
 - Composite (pour la gestion des groupes)
 - Factory (pour la création des formes)
 
-### Concepts généraux
+### Patron visiteur
+![](./doc/PatronVisiteur.svg)
 
-
-### Patron visiteur et composite
-![](./doc/svg/Model!composite_visiteur_shapes.svg)
+### Patron composite
+![](./doc/PatronComposite.svg)
 
 ### Patron Factory
 Il est utilisé pour la création des formes.
 Il fonctionne comme suit : il s'agit d'une classe : `ShapeFactory` qui possède une méthode `createShape` qui dispose de plusieurs méthodes statiques
 qui permettent de créer les différentes formes.
 
-### Patron Command
-![](./doc/svg/Model!patron_command_whiteboard.svg)
-
 ## Corrections apportées depuis la dernière itération
 
 N'ayant pas réussi à implémenter correctement les attendus précédents dans le temps imparti, nous avons passé du temps de cette itération à la corrections des points suivants :
-Création d'un groupe, réimplémentation du patron composite, modification de ImportFiles.
+Création d'un groupe, réimplémentation du patron composite, modification de ImportFiles, implémentation du "clear" et ajout de documents de conception.
 
 
 
 ## Conclusion
 
-Sur les attendus, il nous manque plusieurs choses : l'implémentation du CTRL + Z, l'ajout d'une nouvelle forme spécifique, 
+Sur les attendus, le fait de rattraper notre retard sur certains points nous en a fait prendre encore plus sur d'autres. Le fait de changer d'IDE (Eclipse vers IntelliJ) nous a facilité l'utilisation de git et toutes les démarches de configuration de projet et de génération de jar. Cependant, nous n'avons pas retrouvé comment analyser sur sonar. Nous n'avons pas non plus pu alouer de temps pour les tests. il nous manque plusieurs choses : l'implémentation du CTRL + Z, l'ajout d'une nouvelle forme spécifique, 
 Ce projet nous a permis d'expérimenter différents patrons de conception.
 Il nous a aussi appris à faire du clean code et à utiliser les tests unitaires pour vérifier le bon fonctionnement de notre code.
 
