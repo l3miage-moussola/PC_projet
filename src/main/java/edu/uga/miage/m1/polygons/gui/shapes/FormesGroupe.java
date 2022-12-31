@@ -24,7 +24,9 @@ public class FormesGroupe extends AbstractShape {
 
 	@Override
 	public void draw(Graphics2D g2) {
-
+		for(SimpleShape  shape : shapesList) {
+			shape.draw(g2);
+		}
 	}
 
 	@Override
@@ -36,9 +38,60 @@ public class FormesGroupe extends AbstractShape {
 	public int getY() {
 		return 0;
 	}
+	
+	public int getXmin() {
+		int xmin =shapesList.get(0).getX();
+		for(SimpleShape shape : shapesList) {
+			if(shape.getX()<=xmin) {
+				xmin=shape.getX();
+			}
+		}
+		return xmin;
+	}
+	public int getXmax() {
+		int xmax=0;
+		for(SimpleShape shape : shapesList) {
+			if(shape.getX()>=xmax) {
+				xmax=shape.getX();
+			}
+		}
+		return xmax;
+	}
+	
+	public int getYmin() {
+		int ymin =shapesList.get(0).getX();
+		for(SimpleShape shape : shapesList) {
+			if(shape.getY()<=ymin) {
+				ymin=shape.getY();
+			}
+		}
+		return ymin;
+	}
+	public int getYmax() {
+		int ymax=0;
+		for(SimpleShape shape : shapesList) {
+			if(shape.getX()>=ymax) {
+				ymax=shape.getX();
+			}
+		}
+		return ymax;
+	}
+	
+
 
 	@Override
 	public void accept(Visitor visitor) {
 
 	}
+	@Override
+	public void move(int x,int y ) {
+		for(SimpleShape shape : shapesList) {
+			shape.move(x,y);
+		}
+	}
+	
+    @Override
+    public boolean isInside(int x , int y) {
+    		return x>= getXmin()-50 && x<= getXmax() +50 && y>= getYmin()-50 && y<= getYmax() +50;
+    }
 }

@@ -59,4 +59,10 @@ public class JSonVisitor implements Visitor {
     public String getRepresentation() {
         return representation;
     }
+
+	@Override
+	public void visit(BestShape image) {
+		
+		
+	}
 }

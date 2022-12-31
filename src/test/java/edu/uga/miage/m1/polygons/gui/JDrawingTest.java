@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.xml.sax.SAXException;
 
-import edu.uga.miage.m1.polygons.gui.JDrawingFrame.ImportFiles;
+import edu.uga.miage.m1.polygons.gui.ImportFiles;
 
 @ExtendWith(MockitoExtension.class)
 class JDrawingTest {

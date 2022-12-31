@@ -23,6 +23,10 @@ public interface SimpleShape extends Visitable
     int getX();
     
     int getY();
-
+ 
     void move(int x, int y);
+    void setSelected();
+    boolean getSelected();
+    boolean isInside(int x , int y);
+    
 }

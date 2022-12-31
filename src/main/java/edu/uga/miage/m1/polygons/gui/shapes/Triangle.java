@@ -77,4 +77,5 @@ public class Triangle extends AbstractShape {
     public int getY() {
         return y;
     }
+    
 }

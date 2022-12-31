@@ -22,19 +22,18 @@ package edu.uga.miage.m1.polygons.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FileDialog;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -45,24 +44,20 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.undo.UndoManager;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-
 import edu.uga.miage.m1.polygons.gui.persistence.*;
 import edu.uga.miage.m1.polygons.gui.shapes.*;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
@@ -83,13 +78,9 @@ implements MouseListener, MouseMotionListener
 	private JLabel mLabel;
 	private ActionListener mReusableActionListener = new ShapeActionListener();
 	private static final Logger logger = Logger.getLogger(JDrawingFrame.class.getName());
-	private static final String CIRCLESTRING = "Circle";
-	private static final String SQUARESTRING = "Square";
-	private static final String TRIANGLESTRING = "Triangle";
-	private static final  String SLASHTYPESTRING = "/type";
-	private static final  String TYPESTRING ="type";
-	boolean groupeCreation = false;
-	
+	private boolean groupeCreation = false;
+	private BufferedImage buff ;
+
 	
 
 
@@ -115,8 +106,17 @@ implements MouseListener, MouseMotionListener
 		mPanel.setMinimumSize(new Dimension(400, 400));
 		mPanel.addMouseListener(this);
 		mPanel.addMouseMotionListener(this);
+		mPanel.addKeyListener(new KeyAdapter() {
+			   public void keyPressed(KeyEvent e) {
+			       if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) {
+			           if (!shapesList.isEmpty()) {
+			        	   annuler();
+			           }
+			       }
+			   }
+			});
 		mLabel = new JLabel(" ", SwingConstants.LEFT);
-
+		
 		// Fills the panel
 		setLayout(new BorderLayout());
 		add(mToolbar, BorderLayout.NORTH);
@@ -127,10 +127,12 @@ implements MouseListener, MouseMotionListener
 		addShape(TypeShape.SQUARE, new ImageIcon(getClass().getResource("images/square.png")));
 		addShape(TypeShape.TRIANGLE, new ImageIcon(getClass().getResource("images/triangle.png")));
 		addShape(TypeShape.CIRCLE, new ImageIcon(getClass().getResource("images/circle.png")));
+		addShape(TypeShape.BESTSHAPE, new ImageIcon(getClass().getResource("images/underc.png")));
 		addExport("XML");
 		addExport("JSON");
 		addImport();
 		addGroupe();
+		addUndo();
 		setPreferredSize(new Dimension(400, 400));
 	}
 	
@@ -157,6 +159,23 @@ implements MouseListener, MouseMotionListener
 		mToolbar.add(button);
 		mToolbar.validate();
 		repaint();
+	}
+	private void addUndo() {
+		JButton undoButton = new JButton("clear");
+		eButtons.put("Annuler", undoButton);
+		undoButton.addActionListener(new ActionListener() {
+			   public void actionPerformed(ActionEvent e) {
+			       if (shapesList.size()>0) {
+			           annuler();
+			       }
+			   }
+			});
+		mToolbar.add(undoButton);
+		mToolbar.validate();
+	}
+	private void annuler() {
+		mPanel.repaint();
+		shapesList.clear();
 	}
 	private void addExport(String exportType) {
 		JButton button = new JButton(exportType);
@@ -195,7 +214,26 @@ implements MouseListener, MouseMotionListener
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                groupeCreation = true;
+            	groupeCreation=!groupeCreation;
+            	if(!groupeCreation) {
+                	FormesGroupe groupe = (FormesGroupe) ShapeFactory.createShape(0,0,TypeShape.GROUP,null);
+                	shapesList.add(groupe);
+                	List<SimpleShape> shapesToRemove = new ArrayList<>();
+                	for(SimpleShape shape : shapesList) {
+                		if(shape.getSelected()) {
+                			groupe.add(shape);
+                			shapesToRemove.add(shape);
+                			
+                		}
+                	
+            	}
+                	for(SimpleShape shape : shapesToRemove) {
+                		shapesList.remove(shape);
+                	}
+
+}
+            	
+                
             }
             
         });
@@ -236,6 +274,8 @@ implements MouseListener, MouseMotionListener
 		mToolbar.validate();
 
 	}
+	
+	
 
 	/**
 	 * Implements method for the <tt>MouseListener</tt> interface to
@@ -248,12 +288,35 @@ implements MouseListener, MouseMotionListener
 
 		if (mPanel.contains(evt.getX(), evt.getY()))
 		{
-			Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-			SimpleShape shape = ShapeFactory.createShape(evt.getX(), evt.getY(), mSelected);
-			shapesList.add(shape);
-			shape.draw(g2);
+			if(groupeCreation) {
+				for(SimpleShape shape : shapesList) {
+					if(shape.isInside(evt.getX(), evt.getY())) {
+						shape.setSelected();
+					}
+				}		
+			}
+			else {
+				Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+				String path ;
+				if(mSelected==TypeShape.BESTSHAPE) {
+					Export export = new Export();
+				    path = export.setFileLocation(getName(), new FileNameExtensionFilter("PNG file", "png"));
+					try {
+					 buff =ImageIO.read(new File(path));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				 
+				SimpleShape shape = ShapeFactory.createShape(evt.getX(), evt.getY(), mSelected, buff);
+				shapesList.add(shape);
+				shape.draw(g2);
+			}
+
 		}
+
 	}
+	
 
 	/**
 	 * Implements an empty method for the <tt>MouseListener</tt> interface.
@@ -279,11 +342,30 @@ implements MouseListener, MouseMotionListener
 	 * shape dragging.
 	 * @param evt The associated mouse event.
 	 **/
-	private Move move= new Move();
 	SimpleShape movingShape=null;
+	int xDeb=0;
+	int yDeb=0;
+	boolean isShapeSlected;
 	public void mousePressed(MouseEvent evt)
 	{
-		movingShape = move.isSelected(evt, shapesList);
+		if(!groupeCreation) {
+			xDeb=evt.getX();
+			yDeb=evt.getY();
+			for(SimpleShape shape : shapesList) {
+				if(shape.isInside(evt.getX(), evt.getY())){
+					shape.setSelected();
+				}
+				
+			}	
+		}
+	}
+	
+	private void ClearAndDraw() {
+		Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
+		g2.clearRect(0, 0, mPanel.getWidth(), mPanel.getHeight());
+		for(SimpleShape shape : shapesList) {
+			shape.draw(g2);
+		}
 	}
 
 	/**
@@ -291,17 +373,23 @@ implements MouseListener, MouseMotionListener
 	 * shape dragging.
 	 * @param evt The associated mouse event.
 	 **/
+	boolean moveGroupe=false;
 	public void mouseReleased(MouseEvent evt)
-	{
-		mPanel.validate();
-		move.moveShape(evt, mPanel, shapesList, movingShape);
-		for(SimpleShape shape : shapesList) {
-            if (mPanel.contains(evt.getX(), evt.getY()))
-            {
-                Graphics2D g2 = (Graphics2D) mPanel.getGraphics();
-                shape.draw(g2);
-            }
-        }
+	{	
+		
+		if(!groupeCreation && mPanel.contains(evt.getX(), evt.getY())) {
+			for(SimpleShape shape : shapesList) {
+				if(shape.getSelected()) {
+					shape.move((evt.getX()-xDeb),(evt.getY()-yDeb));
+					shape.setSelected();
+				}
+			}
+			
+			
+	
+		}
+		ClearAndDraw();
+
 	}
 
 	/**
@@ -309,20 +397,8 @@ implements MouseListener, MouseMotionListener
 	 * move a dragged shape.
 	 * @param evt The associated mouse event.
 	 **/
-	FormesGroupe groupe = (FormesGroupe) ShapeFactory.createShape(0,0,TypeShape.GROUP);
 	public void mouseDragged(MouseEvent evt)
-	{
-		if(groupeCreation) {
-
-            SimpleShape newShape = move.isSelected(evt, shapesList);
-            if(newShape!=null && !(groupe.getGroupeForms().stream().anyMatch(e -> e.getX() == newShape.getX() && e.getY()==newShape.getY()))) {
-                
-            	groupe.add(newShape);            
-            }
-
-        }
-        mPanel.repaint();
-        
+	{   
 	}
 
 	/**
@@ -360,173 +436,6 @@ implements MouseListener, MouseMotionListener
 					btn.setBorderPainted(false);
 				}
 				btn.repaint();
-			}
-		}
-	}
-
-	private class Export {
-		public void  convertToXml(List<SimpleShape> shapesList) throws IOException {
-			XMLVisitor visitor = new XMLVisitor();
-			File file = new File("shapes.xml");
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n <root>\n");
-			for(SimpleShape localSimpleShape : shapesList) {
-
-				localSimpleShape.accept(visitor);
-				stringBuilder.append(visitor.getRepresentation());
-			}
-			stringBuilder.append("\n </root>");
-
-			String result = stringBuilder.toString();
-
-
-			try (FileWriter writter = new FileWriter(file);) {
-				writter.write(result);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-
-		}
-		public void convertToJson(List<SimpleShape> shapesList) {
-			JSonVisitor visitor = new JSonVisitor();
-			File file = new File("shapesJson.json");
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("{\n \"Shapes\":[\n");
-
-			for(SimpleShape localSimpleShape : shapesList) {
-
-				localSimpleShape.accept(visitor);
-				stringBuilder.append(visitor.getRepresentation());
-			}
-			String result = stringBuilder.toString();
-			result =result.replace("}{","},{");
-			
-			StringBuilder stringBuilder2 = new StringBuilder();
-			stringBuilder2.append(result+"\n]\n}");
-
-			result=stringBuilder2.toString();
-			try {
-				FileWriter writter = new FileWriter(file);
-				writter.write(result);
-				writter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public class ImportFiles{
-		private List<SimpleShape> shapesList = new ArrayList<>();
-		public void importFile() throws ParserConfigurationException, IOException, SAXException {
-			FileDialog fd = new FileDialog(new JFrame());
-			fd.setVisible(true);
-			File f = fd.getFiles()[0];
-			String representation="";
-			try {
-				representation = Files.readString(Paths.get(f.getAbsolutePath()));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			String fileType = f.getAbsolutePath().substring( f.getAbsolutePath().lastIndexOf(".")+1);
-			if(fileType.equals("xml")) {
-				xmlImport(f);
-			}
-			if(fileType.equals("json")) {
-				jsonImport(representation);
-			}
-
-
-		}
-		private void xmlImport(File rep) throws ParserConfigurationException, IOException, SAXException {
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.parse(rep.getAbsoluteFile());
-			doc.getDocumentElement();
-
-			NodeList nodeList = doc.getElementsByTagName("shape");
-			Element	node;
-			for (int i = 0; i < nodeList.getLength(); i++) {
-				node = (Element) nodeList.item(i);
-				String type = node.getElementsByTagName("type").item(0).getTextContent();
-				int x = Integer.parseInt(node.getElementsByTagName("x").item(0).getTextContent());
-				int y = Integer.parseInt(node.getElementsByTagName("y").item(0).getTextContent());
-				SimpleShape simpleShape = ShapeFactory.createShape(x,y, TypeShape.valueOf(type));
-				shapesList.add(simpleShape);
-
-
-			}
-
-		}
-		private void jsonImport(String rep) {
-			logger.log(new LogRecord(Level.INFO, "Rep :" +rep));
-
-			while(rep.contains(TYPESTRING)) {
-				StringBuilder stringBuilderType = new StringBuilder();
-				
-				int x=0;
-				int y=0;
-				int deb = rep.indexOf(TYPESTRING)+8;
-				int fin = rep.indexOf(",")-1;
-				for(int i=deb;i<fin;i++) {
-					stringBuilderType.append(rep.charAt(i)); 
-				}
-				String type = stringBuilderType.toString();
-				logger.log(new LogRecord(Level.INFO, "\n le type"+type));
-
-				StringBuilder stringBuilderxoccur = new StringBuilder();
-				int xdeb=rep.indexOf("\"x\"")+4;
-				int ydeb=rep.indexOf("\"y\"");
-				for(int i=xdeb;i<=ydeb-2;i++) {
-					stringBuilderxoccur.append(rep.charAt(i));
-				}
-				String yoccur="";
-				for(int i=ydeb+4;i<rep.indexOf("}");i++) {
-					yoccur+=rep.charAt(i);
-				}
-				String xoccur= stringBuilderxoccur.toString();
-				x=Integer.parseInt(xoccur);
-				logger.log(new LogRecord(Level.INFO,"X :" +x));
-
-				y=Integer.parseInt(yoccur);
-				logger.log(new LogRecord(Level.INFO,"Y :" +y));
-
-				rep=rep.substring(rep.indexOf("}")+2);
-				logger.log(new LogRecord(Level.INFO,"Rep :" +rep));
-
-				shapesList.add(ShapeFactory.createShape(x,y, TypeShape.valueOf(type)));
-			}
-		}
-
-		public List<SimpleShape> getList() {
-			return this.shapesList;
-		}
-	}
-
-	public class Move implements Serializable
-	{
-
-		private static final long serialVersionUID = 2434191698956589572L;
-
-		public SimpleShape isSelected(MouseEvent evt, List<SimpleShape> shapesList) {
-            for(SimpleShape shape : shapesList) {
-                if( evt.getX()>= shape.getX() && evt.getX()<= shape.getX() +50 && evt.getY()>= shape.getY() && evt.getY()<= shape.getY() +50) {
-                    return shape;
-                }
-            }
-            return null;
-        }
-
-		public void moveShape(MouseEvent evt , JPanel panel , List<SimpleShape> shapesList,SimpleShape shape) {
-			if(shape!=null) {
-				SimpleShape newShape = null;
-				Graphics2D g2 = (Graphics2D) panel.getGraphics();
-
-				shape.move(evt.getX(), evt.getY());
-
-				shape.draw(g2);
-
 			}
 		}
 	}

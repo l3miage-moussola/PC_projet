@@ -70,4 +70,5 @@ public class Square extends AbstractShape {
     public int getY() {
         return y;
     }
+
 }
