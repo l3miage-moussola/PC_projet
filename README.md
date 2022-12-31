@@ -55,11 +55,11 @@ Pour ajouter une autre forme, cliquez sur l'icone jaune (icône chantier), puis 
 - Composite (pour la gestion des groupes)
 - Factory (pour la création des formes)
 
-### Patron visiteur
-![](./doc/PatronVisiteur.svg)
-
 ### Patron composite
 ![](./doc/PatronComposite.svg)
+
+### Patron visiteur
+![](./doc/PatronVisiteur.svg)
 
 ### Patron Factory
 Il est utilisé pour la création des formes.
@@ -71,11 +71,14 @@ qui permettent de créer les différentes formes.
 N'ayant pas réussi à implémenter correctement les attendus précédents dans le temps imparti, nous avons passé du temps de cette itération à la corrections des points suivants :
 Création d'un groupe, réimplémentation du patron composite, modification de ImportFiles, implémentation du "clear" et ajout de documents de conception.
 
-
+## Dette technique et couverture de tests
+Contrairement à l'itération précédente durant laquelle nous nous étions trop concentrés sur le fait d'avoir une dette technique à 0 et une couverture de tests validée par sonar, nous n'avons cette fois pas réussi à utiliser sonar.
+Le fait de changer d'IDE (Eclipse vers IntelliJ) nous a facilité l'utilisation de git et toutes les démarches de configuration de projet et de génération de jar. Cependant, nous n'avons pas retrouvé comment analyser sur sonar.
+Nous avons donc fait le choix cette fois-ci de nous concentrer sur la correction des problèmes des itérations précédentes.
 
 ## Conclusion
 
-Sur les attendus, le fait de rattraper notre retard sur certains points nous en a fait prendre encore plus sur d'autres. Le fait de changer d'IDE (Eclipse vers IntelliJ) nous a facilité l'utilisation de git et toutes les démarches de configuration de projet et de génération de jar. Cependant, nous n'avons pas retrouvé comment analyser sur sonar. Nous n'avons pas non plus pu alouer de temps pour les tests. il nous manque plusieurs choses : l'implémentation du CTRL + Z, l'ajout d'une nouvelle forme spécifique, 
+Sur les attendus, le fait de rattraper notre retard sur certains points nous en a fait prendre encore plus sur d'autres. Le temps passé à faire fonctionner ce qui ne fonctionnait pas durant les dernières itérations et à refactorer n'a pas pu être utilisé pour les tests ni pour l'intégration du jar de l'autre groupe.
 Ce projet nous a permis d'expérimenter différents patrons de conception.
 Il nous a aussi appris à faire du clean code et à utiliser les tests unitaires pour vérifier le bon fonctionnement de notre code.
 
